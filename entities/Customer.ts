@@ -19,7 +19,7 @@ export class Customer {
   username: string;
 
   @Column({ nullable: false })
-  passwordHash: string;
+  password: string;
 
   @Column({ unique: true, nullable: false })
   email: string;
