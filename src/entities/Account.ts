@@ -1,18 +1,19 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, Relation } from 'typeorm';
-
 import { Customer } from './Customer';
 
-@Entity
+@Entity()
 export class Account {
   @PrimaryGeneratedColumn('uuid')
-  accountNumber: number;
+  accountNumber: string;
 
-  @Column()
+  @Column({ nullable: false })
   currentBalance: number;
 
-  @Column()
+  @Column({ unique: true })
   routingNumber: number;
 
-  @ManyToOne(() => Customer, (customer) => customer.accounts)
+  @ManyToOne(() => Customer, (customer) => customer.accounts, {
+    cascade: ['insert', 'update'],
+  })
   customer: Relation<Customer>;
 }
