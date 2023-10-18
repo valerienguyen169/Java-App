@@ -7,10 +7,16 @@ export class Account {
   accountNumber: string;
 
   @Column({ nullable: false })
+  accountName: string;
+
+  @Column({ nullable: false })
   currentBalance: number;
 
   @Column({ unique: true })
-  routingNumber: number;
+  routingNumber: string;
+
+  @Column({ nullable: true })
+  interest: number;
 
   @ManyToOne(() => Customer, (customer) => customer.accounts, {
     cascade: ['insert', 'update'],

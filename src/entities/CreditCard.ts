@@ -7,6 +7,9 @@ export class CreditCard {
   accountNumber: string;
 
   @Column({ nullable: false })
+  accountName: string;
+
+  @Column({ nullable: false })
   currentBalance: number;
 
   @Column({ nullable: false })
