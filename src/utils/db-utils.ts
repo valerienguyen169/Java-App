@@ -1,44 +1,29 @@
-import { Request, Response, NextFunction } from 'express';
-import joi from 'joi';
-import chalk from 'chalk';
+import { QueryFailedError } from 'typeorm';
 
-type RequestField = 'query' | 'body' | 'params';
+function parseDatabaseError(err: unknown): DatabaseConstraintError {
+  if (!(err instanceof QueryFailedError)) {
+    return { type: 'unknown', message: 'An unknown database error has occurred.' };
+  }
 
-const redBg = chalk.bgRedBright;
-const ur = chalk.underline.redBright;
-const uc = chalk.underline.cyanBright;
+  const driverErrorString: string = err.driverError.toString();
 
-function makeValidator(schema: joi.ObjectSchema<unknown>, prop: RequestField) {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    if (!(prop in req)) {
-      res.sendStatus(500);
-      const endpoint = `${req.method} ${req.path}`;
-      console.error(
-        `\n${redBg('ERROR')}: failed to validate ${ur(prop)} for endpoint: ${uc(endpoint)}. ${ur(
-          prop
-        )} not defined on request object.\n`
-      );
-      return;
-    }
+  if (driverErrorString.includes('UNIQUE')) {
+    const columnName = driverErrorString?.split(':')?.at(-1)?.split('.').at(-1) ?? '';
+    return { type: 'unique', columnName, message: `The '${columnName}' property must be unique.` };
+  }
+  if (driverErrorString.includes('NOT NULL')) {
+    const columnName = driverErrorString?.split(':')?.at(-1)?.split('.').at(-1) ?? '';
+    return {
+      type: 'not null',
+      columnName,
+      message: `The '${columnName}' property must not be null.`,
+    };
+  }
+  if (driverErrorString.includes('CHECK')) {
+    return { type: 'check', message: `Failed a check constraint.` };
+  }
 
-    const { value, error } = schema.validate(req[prop], {
-      abortEarly: false,
-      stripUnknown: true,
-      errors: {
-        escapeHtml: true,
-      },
-    });
-
-    if (error) {
-      const errorMessages = error.details.map((detail: { message: string }) => detail.message);
-      res.status(400).json({ errorMessages });
-      return;
-    }
-
-    req[prop] = value;
-
-    next();
-  };
+  return { type: 'unknown', message: 'An unknown database error has occurred.' };
 }
 
-export { makeValidator };
+export { parseDatabaseError };
