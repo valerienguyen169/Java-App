@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, Relation } from 'typeorm';
-import { Gender } from '../utils/enums';
 import { Account } from './Account';
 import { Transaction } from './Transaction';
 import { CreditCard } from './CreditCard';
@@ -7,12 +6,12 @@ import { CreditCard } from './CreditCard';
 @Entity()
 export class Customer {
   @PrimaryGeneratedColumn('uuid')
-  customerID: string;
+  customerId: string;
 
-  @Column({ nullable: false })
+  @Column()
   firstName: string;
 
-  @Column({ nullable: false })
+  @Column()
   lastName: string;
 
   @Column({ unique: true, nullable: false })
@@ -25,16 +24,13 @@ export class Customer {
   email: string;
 
   @Column({ nullable: false })
-  phone: number;
+  phone: string;
 
   @Column({ nullable: false })
   dateOfBirth: Date;
 
   @Column({ unique: true, nullable: false })
-  ssn: number;
-
-  @Column({ nullable: true })
-  gender: Gender;
+  ssn: string;
 
   @Column({ nullable: false })
   address: string;
@@ -46,9 +42,9 @@ export class Customer {
   state: string;
 
   @Column({ nullable: false })
-  zip: number;
+  zip: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: 0 })
   income: number;
 
   @OneToMany(() => Account, (accounts) => accounts.customer, {
