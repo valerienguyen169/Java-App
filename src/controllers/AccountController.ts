@@ -48,11 +48,13 @@ async function processTransaction(req: Request, res: Response): Promise<void> {
     }
     account.currentBalance = currentBalance - amount;
     updateAccountByAccountNumber(accountNumber, account);
+    res.sendStatus(200);
   }
 
   if ( type === 'Deposit' ){
     account.currentBalance = currentBalance + amount;
     updateAccountByAccountNumber(accountNumber, account);
+    res.sendStatus(200);
   }
 }
 
