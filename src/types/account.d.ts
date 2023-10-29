@@ -9,3 +9,5 @@ type Account = {
 type AccountIdParam = {
   accountNumber: string;
 };
+
+export {Account, AccountIdParam};
