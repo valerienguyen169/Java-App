@@ -5,7 +5,7 @@ import session from 'express-session';
 import connectSqlite3 from 'connect-sqlite3';
 import { validateNewCustomerBody, validateLoginBody } from './validators/authValidator';
 
-import { registerUser, logIn } from './controllers/CustomerController';
+import { registerUser, logIn, getCustomerDashboard } from './controllers/CustomerController';
 
 const app: Express = express();
 app.set('view engine', 'ejs');
@@ -35,6 +35,7 @@ app.use(express.json());
 
 app.post('/register', validateNewCustomerBody, registerUser);
 app.post('/login', validateLoginBody, logIn);
+app.get('/dashboard', getCustomerDashboard);
 
 app.listen(PORT, () => {
   console.log(`server listening on http://localhost:${PORT}`);
