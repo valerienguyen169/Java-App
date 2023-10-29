@@ -6,6 +6,7 @@ import connectSqlite3 from 'connect-sqlite3';
 import { validateNewCustomerBody, validateLoginBody } from './validators/authValidator';
 
 import { registerUser, logIn, getCustomerDashboard } from './controllers/CustomerController';
+import { processTransaction } from './controllers/AccountController';
 
 const app: Express = express();
 app.set('view engine', 'ejs');
@@ -33,9 +34,13 @@ app.use(
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// Customer
 app.post('/register', validateNewCustomerBody, registerUser);
 app.post('/login', validateLoginBody, logIn);
 app.get('/dashboard', getCustomerDashboard);
+
+// Account
+app.post('/api/accounts/:accountNumber/currentBalance', processTransaction);
 
 app.listen(PORT, () => {
   console.log(`server listening on http://localhost:${PORT}`);
