@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Not Found</title>
+</head>
+<body>
+    <h1>User Not Found</h1>
+    <p>We couldn't find the user you are looking for. Please try again.</p>
+    <br>
+    <form action="/login" method="POST" class="form">
+      <div class="form__group">
+        <label for="username">Username</label>
+        <input name="username" id="username" class="text" placeholder="Username" type="text" required />
+      </div>
+      <div class="form__group">
+        <label for="passwordHash">Password</label>
+        <input
+          name="passwordHash"
+          id="password"
+          class="password"
+          placeholder="Password"
+          type="password"
+          required
+        />
+      </div>
+      <div class="form__group">
+        <button>Login</button>
+      </div>
+</body>
+</html>
