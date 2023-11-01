@@ -1,12 +1,21 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-alert */
 import { Request, Response } from 'express';
 import argon2 from 'argon2';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import {
   addCustomer,
   getCustomerByUserName,
   getCustomerByUserNameAndEmail,
+  getCustomerById,
 } from '../models/CustomerModel';
 import { parseDatabaseError } from '../utils/db-utils';
 import { AuthRequest, LoginAuthRequest } from '../types/customerInfo';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function registerUser(req: Request, res: Response): Promise<void> {
   const {
@@ -64,14 +73,14 @@ async function logIn(req: Request, res: Response): Promise<void> {
   const customer = await getCustomerByUserName(username);
 
   if (!customer) {
-    res.redirect('/login');
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
     return;
   }
 
   const { password } = customer;
 
-  if (!(await argon2.verify(passwordHash, password))) {
-    res.redirect('/login');
+  if (!(await argon2.verify(password, passwordHash))) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/incorrectPassword.html'));
     return;
   }
 
@@ -86,4 +95,48 @@ async function logIn(req: Request, res: Response): Promise<void> {
   res.redirect('/dashboard');
 }
 
-export { registerUser, logIn };
+async function getCustomerDashboard(req: Request, res: Response): Promise<void> {
+  if (!req.session.isLoggedIn) {
+    res.redirect('/login');
+    return;
+  }
+
+  const customer = await getCustomerById(req.session.authenticatedCustomer.customerId);
+  console.log({ customer });
+  res.render('dashboard', { customer });
+}
+
+async function logOut(req: Request, res: Response): Promise<void> {
+  if (req.session) {
+    req.session.isLoggedIn = false;
+    req.session.save(() => {
+      // Session is updated, and customer is marked as not logged in.
+      res.redirect('/');
+    });
+  } else {
+    // Handle the case where there is no active session.
+    res.redirect('/');
+  }
+}
+
+async function viewCustomerProfile(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer } = req.session;
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+
+  const customer = await getCustomerById(customerId);
+
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  res.render('customer/profilePage', { customer });
+}
+
+export { registerUser, logIn, getCustomerDashboard, logOut, viewCustomerProfile };
