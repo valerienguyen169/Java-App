@@ -20,7 +20,7 @@ async function getTransaction(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  res.sendStatus.json(transaction);
+  res.sendStatus(200).json(transaction);
 }
 
 async function makeTransaction(req: Request, res: Response): Promise<void> {
