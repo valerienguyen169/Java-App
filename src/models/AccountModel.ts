@@ -36,7 +36,7 @@ async function getAccountByAccountNumber(accountNumber: string): Promise<Account
   return account;
 }
 
-async function getAccountByCustomerId(customerId: string): Promise<Account[]> {
+async function getAccountsByCustomerId(customerId: string): Promise<Account[]> {
   const accounts = await AccountRepository
   .createQueryBuilder('account')
   .leftJoinAndSelect('account.customer', 'customer')
@@ -72,6 +72,6 @@ export {
   AccountBelongsToCustomer,
   addAccount,
   getAccountByAccountNumber,
-  getAccountByCustomerId,
   updateAccountByAccountNumber,
+  getAccountsByCustomerId,
 }

@@ -4,13 +4,12 @@ import { Customer } from '../entities/Customer';
 
 const transactionRepository = AppDataSource.getRepository(Transaction);
 
-async function addTransaction(transaction: Transaction, customer: Customer): Promise<Transaction> {
+async function addTransaction(amount: number, date: Date, type: string, customer: Customer): Promise<Transaction> {
   let newTransaction = new Transaction();
-  newTransaction.transactionId = transaction.transactionId;
-  newTransaction.amount = transaction.amount;
-  newTransaction.date = transaction.date;
-  if (transaction.type !== undefined) {
-    newTransaction.type = transaction.type;
+  newTransaction.amount = amount;
+  newTransaction.date = date;
+  if (type !== undefined) {
+    newTransaction.type = type;
   }
   newTransaction.customer = customer;
 

@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import argon2 from 'argon2';
 import { parseDatabaseError } from '../utils/db-utils';
-import { getAccountByCustomerId, getAccountByAccountNumber, updateAccountByAccountNumber, addAccount, AccountBelongsToCustomer } from "../models/AccountModel";
+import { getAccountsByCustomerId, getAccountByAccountNumber, updateAccountByAccountNumber, addAccount, AccountBelongsToCustomer } from "../models/AccountModel";
 import { getTransactionById } from '../models/TransactionModel';
 import { Account, AccountIdParam } from '../types/account';
 import { Transaction } from '../types/transaction';
 import { CustomerInfo } from '../types/customerInfo';
 
 async function processTransaction(req: Request, res: Response): Promise<void> {
-  const { accountNumber, accountName, currentBalance, routingNumber } = req.body as Account;
+  const { accountNumber, accountName } = req.body as Account;
   const { customerId } = req.body as CustomerInfo;
   const { transactionID, amount, type } = req.body as Transaction;
 
@@ -16,7 +16,7 @@ async function processTransaction(req: Request, res: Response): Promise<void> {
   const belongs = await AccountBelongsToCustomer( accountNumber, customerId );
   const account = await getAccountByAccountNumber( accountNumber );
 
-  if ( account === null ){
+  if ( !account ){
     res.sendStatus(404); //Couldn't be found
     return;
   }
@@ -26,7 +26,7 @@ async function processTransaction(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  if ( transaction === null ){
+  if ( !transaction ){
     res.sendStatus(404); //Couldn't be found
     return;
   }
@@ -42,17 +42,17 @@ async function processTransaction(req: Request, res: Response): Promise<void> {
   }
 
   if( type === 'Withdrawal' ){
-    if( amount >= currentBalance ){
+    if( amount >= account.currentBalance ){
       res.sendStatus(403); // taking more than you have
       return;
     }
-    account.currentBalance = currentBalance - amount;
+    account.currentBalance = account.currentBalance - amount;
     updateAccountByAccountNumber(accountNumber, account);
     res.sendStatus(200);
   }
 
   if ( type === 'Deposit' ){
-    account.currentBalance = currentBalance + amount;
+    account.currentBalance = amount.currentBalance + amount;
     updateAccountByAccountNumber(accountNumber, account);
     res.sendStatus(200);
   }
