@@ -7,9 +7,7 @@ import { addTransaction,
   getTransactionByCustomerId,
   updateTransactionById,
   transactionBelongsToCustomer } from '../models/TransactionModel';
-import { getAccountByAccountNumber, updateAccountByAccountNumber, addAccount, AccountBelongsToCustomer, getAccountsByCustomerId } from "../models/AccountModel";
 import { Transaction, TransactionIdParam } from '../types/transaction';
-import { CustomerInfo } from '../types/customerInfo';
 import { Account, AccountIdParam } from '../types/account';
 
 async function getTransaction(req: Request, res: Response): Promise<void> {
@@ -39,6 +37,7 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
     return;
   }
   const transaction = await addTransaction(amount, date, type, customer);
+  transaction.customer = undefined;
 }
 
 //async function interBankTransfer (req: Request, res: Response): Promise<void> {
@@ -94,3 +93,6 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
 //    res.sendStatus(200);
 //  }
 //}
+
+
+export {getTransaction, makeTransaction}
