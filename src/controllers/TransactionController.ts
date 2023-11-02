@@ -12,6 +12,19 @@ import { Transaction, TransactionIdParam } from '../types/transaction';
 import { CustomerInfo } from '../types/customerInfo';
 import { Account, AccountIdParam } from '../types/account';
 
+async function getTransaction(req: Request, res: Response): Promise<void> {
+  const {transactionID} = req.params as TransactionIdParam;
+
+  const transaction = await getTransactionById(transactionID);
+
+  if(!transaction){
+    res.sendStatus(404);
+    return;
+  }
+
+  res.sendStatus.json(transaction);
+}
+
 async function makeTransaction(req: Request, res: Response): Promise<void> {
   const {authenticatedCustomer, isLoggedIn} = req.session;
   const {amount, date, type} = req.body as Transaction;
