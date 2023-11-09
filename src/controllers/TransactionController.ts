@@ -75,6 +75,10 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
     return;
   }
   if( type === 'Deposit'){
+    if(amount >= otherAccount.currentBalance){
+      res.sendStatus(403); // can't have negative balance. Turn into redirect later
+      return;
+    }
     account.currentBalance = account.currentBalance + amount;
     updateAccountByAccountNumber(accountNumber, account);
     otherAccount.currentBalance = otherAccount.currentBalance - amount;
@@ -82,6 +86,10 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
     updateAccountByAccountNumber(accountNo, otherAccount);
   }
   if( type === 'Withdrawal'){
+    if(amount <= account.currentBalance){
+      res.sendStatus(403); // can't have negative balance. Turn into redirect later
+      return;
+    }
     account.currentBalance = account.currentBalance - amount;
     updateAccountByAccountNumber(accountNumber, account);
     otherAccount.currentBalance = otherAccount.currentBalance + amount;
