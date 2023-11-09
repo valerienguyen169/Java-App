@@ -4,7 +4,7 @@ import express, { Express } from 'express';
 import session from 'express-session';
 import connectSqlite3 from 'connect-sqlite3';
 import { validateNewCustomerBody, validateLoginBody } from './validators/authValidator';
-import { getAccount } from './controllers/AccountController';
+import { getAccount, getCustomerAccounts } from './controllers/AccountController';
 import { getCustomerTransactions, makeTransaction } from './controllers/TransactionController';
 import {
   registerUser,
@@ -56,6 +56,7 @@ app.get('/ping', (req, res) => {
 
 // Account
 app.get('/accounts/:accountNumber', getAccount);
+app.get('/accounts/:customerId', getCustomerAccounts);
 
 // Transaction
 app.post('/api/transactions', makeTransaction);
