@@ -10,16 +10,20 @@ import { addTransaction,
 import { getAccountByAccountNumber, updateAccountByAccountNumber } from '../models/AccountModel';
 import { Transaction, TransactionIdParam } from '../types/transaction';
 import { AccountIdParam } from '../types/account';
-import { CustomerIdParam } from '../types/customerInfo';
+import { CustomerIdParam, CustomerInfo } from '../types/customerInfo';
 
 async function getTransaction(req: Request, res: Response): Promise<void> {
   const {transactionID} = req.params as TransactionIdParam;
-
+  const {customerId} = req.body as CustomerInfo;
   const transaction = await getTransactionById(transactionID);
 
   if(!transaction){
     res.sendStatus(404);
     return;
+  }
+  const belongs = transactionBelongsToCustomer(transactionID, customerId);
+  if(!belongs){
+    res.sendStatus(403); // not your transaction. Turn into redirect later
   }
 
   res.sendStatus(200).json(transaction);
