@@ -4,7 +4,7 @@ import { Customer } from './Customer';
 @Entity()
 export class Account {
   @PrimaryGeneratedColumn('uuid')
-  accountNumber: string;
+  accountNumber: number;
 
   @Column({ nullable: false })
   accountName: string;
@@ -13,7 +13,7 @@ export class Account {
   currentBalance: number;
 
   @Column({ unique: true })
-  routingNumber: string;
+  routingNumber: number;
 
   @Column({ nullable: true })
   interest: number;

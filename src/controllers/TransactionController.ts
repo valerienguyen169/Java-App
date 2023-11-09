@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import argon2 from 'argon2';
 import { parseDatabaseError } from '../utils/db-utils';
-import { getCustomerById } from '../models/CustomerModel';
+import { getCustomerById, getCustomerByAccountNumber } from '../models/CustomerModel';
 import { addTransaction,
   getTransactionById,
   getTransactionByCustomerId,
   updateTransactionById,
   transactionBelongsToCustomer } from '../models/TransactionModel';
+import { getAccountByAccountNumber, updateAccountByAccountNumber } from '../models/AccountModel';
 import { Transaction, TransactionIdParam } from '../types/transaction';
 import { Account, AccountIdParam } from '../types/account';
 
@@ -25,74 +26,60 @@ async function getTransaction(req: Request, res: Response): Promise<void> {
 
 async function makeTransaction(req: Request, res: Response): Promise<void> {
   const {authenticatedCustomer, isLoggedIn} = req.session;
-  const {amount, date, type} = req.body as Transaction;
+  const {amount, date, type, accountNo} = req.body as Transaction;
+  const {accountNumber} = req.params as AccountIdParam;
   if (!isLoggedIn){
     res.redirect('/login');
     return;
   }
   const customer = await getCustomerById(authenticatedCustomer.customerId);
-
+  const account = await getAccountByAccountNumber(accountNumber);
+  const otherCustomer = await getCustomerByAccountNumber(accountNo);
+  const otherAccount = await getAccountByAccountNumber(accountNo);
+  let otherType: string;
   if (!customer){
     res.sendStatus(404);
     return;
   }
-  const transaction = await addTransaction(amount, date, type, customer);
+  if (!account){
+    res.sendStatus(404);
+    return;
+  }
+  if (!otherCustomer){
+    res.sendStatus(404);
+    return;
+  }
+  if (!otherAccount){
+    res.sendStatus(404);
+    return;
+  }
+  if(accountNumber === accountNo){
+    res.sendStatus(400); // this would do nothing. Possibly a redirect as well
+    return;
+  }
+  if( type !== 'Deposit' && type !== 'Withdrawal'){
+    res.sendStatus(403); //no other possible transactions
+    return;
+  }
+  if( type === 'Deposit'){
+    account.currentBalance = account.currentBalance + amount;
+    updateAccountByAccountNumber(accountNumber, account);
+    otherAccount.currentBalance = otherAccount.currentBalance - amount;
+    otherType = 'Withdrawal';
+    updateAccountByAccountNumber(accountNo, otherAccount);
+  }
+  if( type === 'Withdrawal'){
+    account.currentBalance = account.currentBalance - amount;
+    updateAccountByAccountNumber(accountNumber, account);
+    otherAccount.currentBalance = otherAccount.currentBalance + amount;
+    otherType = 'Deposit';
+    updateAccountByAccountNumber(accountNo, otherAccount);
+  }
+  const transaction = await addTransaction(amount, date, type, accountNumber, customer);
+  const otherTransaction = await addTransaction(amount, date, type, accountNo, otherCustomer);
   transaction.customer = undefined;
+  otherTransaction.customer = undefined;
 }
-
-//async function interBankTransfer (req: Request, res: Response): Promise<void> {
-//  const {transactionID} = req.params as TransactionIdParam;
-//  const {customerId} = req.body as CustomerInfo;
-//  const {accountNumber} = req.query as AccountIdParam;
-//  const {routingNumber} = req.body as Account;
-//  const {amount, type} = req.body as Transaction;
-//
-//  const transaction = await getTransactionById(transactionID);
-//  const accountList = await getAccountsByCustomerId(customerId);
-//  const otherAccount = await getAccountByAccountNumber(accountNumber);
-//  let account: Account;
-//
-//  if(routingNumber === account.routingNumber){
-//    res.sendStatus(400); // this is an intrabank transfer. Maybe this could be made a redirect?
-//    return;
-//  }
-//
-//  if(accountNumber === otherAccount?.accountNumber){
-//    res.sendStatus(400); // this would do nothing. Possibly a redirect as well
-//    return;
-//  }
-//
-//  if ( !account ){
-//    res.sendStatus(404); //Couldn't be found
-//    return;
-//  }
-//
-//  if ( !transaction ){
-//    res.sendStatus(404); //Couldn't be found
-//    return;
-//  }
-//
-//  if( type !== 'WIthdrawal' && transaction.type !== 'Deposit' ){
-//    res.sendStatus(403); //not allowed
-//    return;
-//  }
-//
-//  if( type === 'Withdrawal' ){
-//    if( amount >= account.currentBalance ){
-//      res.sendStatus(403); // taking more than you have
-//      return;
-//    }
-//    account.currentBalance = account.currentBalance - amount;
-//    updateAccountByAccountNumber(accountNumber, account);
-//    res.sendStatus(200);
-//  }
-//
-//  if ( type === 'Deposit' ){
-//    account.currentBalance = amount.currentBalance + amount;
-//    updateAccountByAccountNumber(accountNumber, account);
-//    res.sendStatus(200);
-//  }
-//}
 
 
 export {getTransaction, makeTransaction}

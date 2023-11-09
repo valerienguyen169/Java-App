@@ -19,7 +19,7 @@ async function addAccount(account: Account, customer: Customer): Promise<Account
   return newAccount;
 }
 
-async function getAccountByAccountNumber(accountNumber: string): Promise<Account | null> {
+async function getAccountByAccountNumber(accountNumber: number): Promise<Account | null> {
   const account = await AccountRepository
   .createQueryBuilder('account')
   .where('account.accountNumber = :accountNumber', { accountNumber })
@@ -47,7 +47,7 @@ async function getAccountsByCustomerId(customerId: string): Promise<Account[]> {
   return accounts;
 }
 
-async function AccountBelongsToCustomer(accountNumber: string, customerId: string): Promise <boolean> {
+async function AccountBelongsToCustomer(accountNumber: number, customerId: string): Promise <boolean> {
   const accountExists = await AccountRepository
   .createQueryBuilder('account')
   .leftJoinAndSelect('account.customer', 'customer')
@@ -58,7 +58,7 @@ async function AccountBelongsToCustomer(accountNumber: string, customerId: strin
   return accountExists;
 }
 
-async function updateAccountByAccountNumber( accountNumber: string, newAccount: Partial<Account>): Promise<void> {
+async function updateAccountByAccountNumber( accountNumber: number, newAccount: Partial<Account>): Promise<void> {
   await AccountRepository
   .createQueryBuilder()
   .update(Account)

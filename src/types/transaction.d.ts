@@ -3,6 +3,7 @@ type Transaction = {
   amount: number;
   date: Date;
   type?: string;
+  accountNo: number,
 };
 
 type TransactionIdParam = {

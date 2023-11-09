@@ -7,7 +7,7 @@ type Account = {
 };
 
 type AccountIdParam = {
-  accountNumber: string;
+  accountNumber: number;
 };
 
 export {Account, AccountIdParam};

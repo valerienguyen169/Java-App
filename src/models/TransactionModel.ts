@@ -4,13 +4,14 @@ import { Customer } from '../entities/Customer';
 
 const transactionRepository = AppDataSource.getRepository(Transaction);
 
-async function addTransaction(amount: number, date: Date, type: string, customer: Customer): Promise<Transaction> {
+async function addTransaction(amount: number, date: Date, type: string, accountNo: number, customer: Customer): Promise<Transaction> {
   let newTransaction = new Transaction();
   newTransaction.amount = amount;
   newTransaction.date = date;
   if (type !== undefined) {
     newTransaction.type = type;
   }
+  newTransaction.accountNo = accountNo;
   newTransaction.customer = customer;
 
   newTransaction = await transactionRepository.save(newTransaction);
@@ -28,6 +29,7 @@ async function getTransactionById(transactionId: string): Promise<Transaction | 
       'transaction.amount',
       'transaction.date',
       'transaction.type',
+      'transaction.accountNo',
       'customer.customerId',
     ])
     .getOne();

@@ -70,6 +70,17 @@ async function getCustomerById(customerId: string): Promise<Customer | null> {
   return customer;
 }
 
+async function getCustomerByAccountNumber(accountNumber: number): Promise<Customer | null> {
+  const customer = await customerRepository
+  .createQueryBuilder('customer')
+  .leftJoinAndSelect('customer.accounts', 'accounts')
+  .where({ accounts: { accountNumber }})
+  .select(['customer', 'accounts.accountNumber'])
+  .getOne();
+
+  return customer;
+}
+
 async function updateEmailAddressById(customerId: string, newEmail: string): Promise<void> {
   await customerRepository
     .createQueryBuilder()
@@ -154,6 +165,7 @@ export {
   getCustomerByEmail,
   getCustomerById,
   getCustomerByUserNameAndEmail,
+  getCustomerByAccountNumber,
   updateEmailAddressById,
   updateAddressById,
   updateCityById,
