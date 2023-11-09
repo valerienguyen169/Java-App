@@ -49,7 +49,7 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
   const account = await getAccountByAccountNumber(accountNumber);
   const otherCustomer = await getCustomerByAccountNumber(accountNo);
   const otherAccount = await getAccountByAccountNumber(accountNo);
-  let otherType: string;
+  let otherType = '';
   if (!customer){
     res.sendStatus(404);
     return;
@@ -89,7 +89,7 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
     updateAccountByAccountNumber(accountNo, otherAccount);
   }
   const transaction = await addTransaction(amount, date, type, accountNumber, customer);
-  const otherTransaction = await addTransaction(amount, date, type, accountNo, otherCustomer);
+  const otherTransaction = await addTransaction(amount, date, otherType, accountNo, otherCustomer);
   transaction.customer = undefined;
   otherTransaction.customer = undefined;
 }
