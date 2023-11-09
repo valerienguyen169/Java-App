@@ -4,7 +4,8 @@ import express, { Express } from 'express';
 import session from 'express-session';
 import connectSqlite3 from 'connect-sqlite3';
 import { validateNewCustomerBody, validateLoginBody } from './validators/authValidator';
-import { processTransaction } from './controllers/AccountController';
+import { getAccount } from './controllers/AccountController';
+import { getCustomerTransactions, makeTransaction } from './controllers/TransactionController';
 import {
   registerUser,
   logIn,
@@ -54,7 +55,11 @@ app.get('/ping', (req, res) => {
 });
 
 // Account
-app.post('/api/accounts/:accountNumber/currentBalance', processTransaction);
+app.get('/accounts/:accountNumber', getAccount);
+
+// Transaction
+app.post('/api/transactions', makeTransaction);
+app.get('/transactions/:customerId', getCustomerTransactions);
 
 app.listen(PORT, () => {
   console.log(`server listening on http://localhost:${PORT}`);

@@ -36,7 +36,7 @@ async function getTransactionById(transactionId: string): Promise<Transaction | 
   return transaction;
 }
 
-async function getTransactionByCustomerId(customerId: string): Promise<Transaction[]> {
+async function getTransactionsByCustomerId(customerId: string): Promise<Transaction[]> {
   const transactions = await transactionRepository
     .createQueryBuilder('transaction')
     .leftJoinAndSelect('transaction.customer', 'customer')
@@ -76,7 +76,7 @@ async function transactionBelongsToCustomer(
 export {
   addTransaction,
   getTransactionById,
-  getTransactionByCustomerId,
+  getTransactionsByCustomerId,
   updateTransactionById,
   transactionBelongsToCustomer,
 };

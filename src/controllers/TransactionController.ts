@@ -4,12 +4,13 @@ import { parseDatabaseError } from '../utils/db-utils';
 import { getCustomerById, getCustomerByAccountNumber } from '../models/CustomerModel';
 import { addTransaction,
   getTransactionById,
-  getTransactionByCustomerId,
+  getTransactionsByCustomerId,
   updateTransactionById,
   transactionBelongsToCustomer } from '../models/TransactionModel';
 import { getAccountByAccountNumber, updateAccountByAccountNumber } from '../models/AccountModel';
 import { Transaction, TransactionIdParam } from '../types/transaction';
-import { Account, AccountIdParam } from '../types/account';
+import { AccountIdParam } from '../types/account';
+import { CustomerIdParam } from '../types/customerInfo';
 
 async function getTransaction(req: Request, res: Response): Promise<void> {
   const {transactionID} = req.params as TransactionIdParam;
@@ -22,6 +23,18 @@ async function getTransaction(req: Request, res: Response): Promise<void> {
   }
 
   res.sendStatus(200).json(transaction);
+}
+
+async function getCustomerTransactions(req: Request, res: Response): Promise<void> {
+  const {customerId} = req.params as CustomerIdParam;
+  const customer = await getCustomerById(customerId);
+  if (!customer){
+    res.sendStatus(404); // Couldn't be found
+    return;
+  }
+  const transactions = await getTransactionsByCustomerId(customerId);
+  res.status(201).json(transactions); // replace with render once front-end file is created.
+
 }
 
 async function makeTransaction(req: Request, res: Response): Promise<void> {
@@ -82,4 +95,4 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
 }
 
 
-export {getTransaction, makeTransaction}
+export {getTransaction, makeTransaction, getCustomerTransactions}
