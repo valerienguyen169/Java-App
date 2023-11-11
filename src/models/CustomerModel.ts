@@ -70,17 +70,6 @@ async function getCustomerById(customerId: string): Promise<Customer | null> {
   return customer;
 }
 
-async function getCustomerByAccountNumber(accountNumber: number): Promise<Customer | null> {
-  const customer = await customerRepository
-  .createQueryBuilder('customer')
-  .leftJoinAndSelect('customer.accounts', 'accounts')
-  .where({ accounts: { accountNumber }})
-  .select(['customer', 'accounts.accountNumber'])
-  .getOne();
-
-  return customer;
-}
-
 async function updateEmailAddressById(customerId: string, newEmail: string): Promise<void> {
   await customerRepository
     .createQueryBuilder()
@@ -89,6 +78,17 @@ async function updateEmailAddressById(customerId: string, newEmail: string): Pro
     .where({ customerId })
     .execute();
 }
+
+// async function updateSecondEmailAddressById(
+//   customerId: string,
+//   newSecondEmail: string
+// ): Promise<void> {
+//   await customerRepository.createQueryBuilder
+//     .update(Customer)
+//     .set({ secondEmailAddress: newSecondEmail })
+//     .where({ customerId })
+//     .execute();
+// }
 
 async function updateAddressById(customerId: string, newAddress: string): Promise<void> {
   await customerRepository
@@ -135,11 +135,20 @@ async function updateIncomeById(customerId: string, newIncome: number): Promise<
     .execute();
 }
 
-async function updateDateOfBirthById(customerId: string, newDateOfBirth: Date): Promise<void> {
+async function updateUsernameById(customerId: string, newUsername: string): Promise<void> {
   await customerRepository
     .createQueryBuilder()
     .update(Customer)
-    .set({ dateOfBirth: newDateOfBirth })
+    .set({ username: newUsername })
+    .where({ customerId })
+    .execute();
+}
+
+async function updatePasswordById(customerId: string, newPassword: string): Promise<void> {
+  await customerRepository
+    .createQueryBuilder()
+    .update(Customer)
+    .set({ password: newPassword })
     .where({ customerId })
     .execute();
 }
@@ -165,13 +174,14 @@ export {
   getCustomerByEmail,
   getCustomerById,
   getCustomerByUserNameAndEmail,
-  getCustomerByAccountNumber,
   updateEmailAddressById,
+  // updateSecondEmailAddressById,
   updateAddressById,
   updateCityById,
   updateStateById,
   updateZipById,
   updateIncomeById,
-  updateDateOfBirthById,
+  updateUsernameById,
+  updatePasswordById,
   getRemindersDueInOneWeek,
 };
