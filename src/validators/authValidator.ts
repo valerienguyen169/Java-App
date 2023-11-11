@@ -25,4 +25,16 @@ const loginSchema = Joi.object({
 });
 const validateLoginBody = makeValidator(loginSchema, 'body');
 
-export { validateNewCustomerBody, validateLoginBody };
+const updatePasswordSchema = Joi.object({
+  currentPassword: Joi.string().required(),
+  newPassword: Joi.string()
+    .min(8)
+    .regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}$/)
+    .max(25)
+    .required(),
+  confirmNewPassword: Joi.ref('newPassword'),
+});
+
+const validatePasswordUpdateBody = makeValidator(updatePasswordSchema, 'body');
+
+export { validateNewCustomerBody, validateLoginBody, validatePasswordUpdateBody };
