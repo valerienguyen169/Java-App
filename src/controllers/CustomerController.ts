@@ -10,6 +10,9 @@ import {
   getCustomerByUserName,
   getCustomerByUserNameAndEmail,
   getCustomerById,
+  updateIncomeById,
+  updateUsernameById,
+  updatePasswordById,
 } from '../models/CustomerModel';
 import { parseDatabaseError } from '../utils/db-utils';
 import { AuthRequest, LoginAuthRequest } from '../types/customerInfo';
@@ -139,4 +142,189 @@ async function viewCustomerProfile(req: Request, res: Response): Promise<void> {
   res.render('customer/profilePage', { customer });
 }
 
-export { registerUser, logIn, getCustomerDashboard, logOut, viewCustomerProfile };
+async function updateIncome(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer } = req.session;
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+  const { income } = req.body as { income: number };
+
+  const customer = await getCustomerById(customerId);
+
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  // Now update their place using try/catch block
+  try {
+    await updateIncomeById(customerId, income);
+  } catch (err) {
+    // There could be invalid input
+    console.error(err);
+    const databaseErrorMessage = parseDatabaseError(err);
+    res.status(500).json(databaseErrorMessage);
+    return;
+  }
+  res.redirect(`/profile`);
+}
+
+async function renderIncomePage(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer } = req.session;
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+
+  const customer = await getCustomerById(customerId);
+
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  res.render('customer/updateIncome', { customer });
+}
+
+async function updateUsername(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer } = req.session;
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+  const { username } = req.body as { username: string };
+
+  const customer = await getCustomerById(customerId);
+
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  // Now update their place using try/catch block
+  try {
+    await updateUsernameById(customerId, username);
+  } catch (err) {
+    // There could be invalid input
+    console.error(err);
+    const databaseErrorMessage = parseDatabaseError(err);
+    res.status(500).json(databaseErrorMessage);
+    return;
+  }
+  res.redirect(`/profile`);
+}
+
+async function renderUsernamePage(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer } = req.session;
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+
+  const customer = await getCustomerById(customerId);
+
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  res.render('customer/updateUsername', { customer });
+}
+
+async function renderPasswordPage(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer } = req.session;
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+
+  const customer = await getCustomerById(customerId);
+
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  res.render('customer/updatePassword', { customer });
+}
+
+async function updatePassword(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer } = req.session;
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+  const { currentPassword, newPassword, confirmNewPassword } = req.body as {
+    currentPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
+  };
+
+  // Fetch the customer's information from the database
+  const customer = await getCustomerById(customerId);
+
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  // Verify that the current password matches the one stored in the database
+  if (!(await argon2.verify(customer.password, currentPassword))) {
+    res.status(401).json({ error: 'Current password is incorrect' });
+    return;
+  }
+
+  // Verify that the new password and confirmation match
+  if (newPassword !== confirmNewPassword) {
+    res.status(400).json({ error: 'New password and confirmation do not match' });
+    return;
+  }
+
+  // Hash and update the new password
+  const newPasswordHash = await argon2.hash(newPassword);
+
+  try {
+    await updatePasswordById(customerId, newPasswordHash); // Implement this function in your database logic
+  } catch (err) {
+    // Handle any database errors
+    console.error(err);
+    const databaseErrorMessage = parseDatabaseError(err);
+    res.status(500).json(databaseErrorMessage);
+    return;
+  }
+
+  res.redirect(`/profile`);
+}
+
+export {
+  registerUser,
+  logIn,
+  getCustomerDashboard,
+  logOut,
+  viewCustomerProfile,
+  updateIncome,
+  renderIncomePage,
+  updateUsername,
+  renderUsernamePage,
+  updatePassword,
+  renderPasswordPage,
+};
