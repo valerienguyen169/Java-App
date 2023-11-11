@@ -3,7 +3,11 @@ import 'express-async-errors'; // Enable default error handling for async errors
 import express, { Express } from 'express';
 import session from 'express-session';
 import connectSqlite3 from 'connect-sqlite3';
-import { validateNewCustomerBody, validateLoginBody } from './validators/authValidator';
+import {
+  validateNewCustomerBody,
+  validateLoginBody,
+  validatePasswordUpdateBody,
+} from './validators/authValidator';
 import { getAccount, getCustomerAccounts } from './controllers/AccountController';
 import { getCustomerTransactions, makeTransaction } from './controllers/TransactionController';
 import {
@@ -12,6 +16,12 @@ import {
   getCustomerDashboard,
   logOut,
   viewCustomerProfile,
+  renderIncomePage,
+  updateIncome,
+  updateUsername,
+  renderUsernamePage,
+  updatePassword,
+  renderPasswordPage,
 } from './controllers/CustomerController';
 
 const app: Express = express();
@@ -47,6 +57,12 @@ app.post('/login', validateLoginBody, logIn);
 app.get('/dashboard', getCustomerDashboard);
 app.get('/logout', logOut);
 app.get('/profile', viewCustomerProfile);
+app.get('/profile/income', renderIncomePage);
+app.post('/profile/income', updateIncome);
+app.get('/profile/username', renderUsernamePage);
+app.post('/profile/username', updateUsername);
+app.get('/profile/password', renderPasswordPage);
+app.post('/profile/password', validatePasswordUpdateBody, updatePassword);
 
 app.get('/ping', (req, res) => {
   // Update the session timestamp to keep it alive
