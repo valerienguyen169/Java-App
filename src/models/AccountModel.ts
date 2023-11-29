@@ -4,13 +4,13 @@ import { Customer } from '../entities/Customer';
 
 const AccountRepository = AppDataSource.getRepository(Account);
 
-//async function addAccount(account: Account, customer: Customer): Promise<Account> {
+//async function addAccount(accountNumber: number, accountName: string, currentBalance: number, routingNumber: number, interest: number, customer: Customer): Promise<Account> {
 //  let newAccount = new Account();
-//  newAccount.accountNumber = account.accountNumber;
-//  newAccount.accountName = account.accountName;
-//  newAccount.currentBalance = account.currentBalance;
-//  newAccount.routingNumber = account.routingNumber;
-//  newAccount.interest = account.interest;
+//  newAccount.accountNumber = accountNumber;
+//  newAccount.accountName = accountName;
+//  newAccount.currentBalance = currentBalance;
+//  newAccount.routingNumber = routingNumber;
+//  newAccount.interest = interest;
 //
 //  newAccount.customer = customer;
 //
@@ -18,8 +18,7 @@ const AccountRepository = AppDataSource.getRepository(Account);
 //
 //  return newAccount;
 //}
-// we may not need this function if we have databases
-
+// may not need it.
 
 async function getAccountByAccountNumber(accountNumber: number): Promise<Account | null> {
   const account = await AccountRepository
@@ -71,6 +70,7 @@ async function updateAccountByAccountNumber( accountNumber: number, newAccount: 
 
 
 export {
+  addAccount,
   AccountBelongsToCustomer,
   getAccountByAccountNumber,
   updateAccountByAccountNumber,

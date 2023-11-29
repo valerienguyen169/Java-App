@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Transaction } from '../entities/Transaction';
 import argon2 from 'argon2';
 import { parseDatabaseError } from '../utils/db-utils';
 import { getCustomerById, getCustomerByAccountNumber } from '../models/CustomerModel';
@@ -38,6 +39,31 @@ async function getCustomerTransactions(req: Request, res: Response): Promise<voi
   }
   const transactions = await getTransactionsByCustomerId(customerId);
   res.status(201).json(transactions); // replace with render once front-end file is created.
+
+}
+
+async function getMonthlyRecord(req: Request, res: Response): Promise<void> {
+  const {customerId} = req.params as CustomerIdParam;
+  let monthStart = new Date();
+  if (monthStart.getDate() !== 1){
+    res.sendStatus(400); // can't do it yet
+  }
+  let lastMonth = new Date();
+  let neededMonth = lastMonth.getMonth() - 1;
+  lastMonth.setMonth(neededMonth);
+  const customer = await getCustomerById(customerId);
+  if(!customer){
+    res.sendStatus(404);
+    return;
+  }
+  let record = [];
+  const transactions = await getTransactionsByCustomerId(customerId);
+  for(let i = 0; i < transactions.length; i++){
+    if(transactions[i].date >= lastMonth && transactions[i].date < monthStart ){
+      record.push(transactions[i]);
+    }
+  }
+  res.status(201).json(record); //replace with render once front-end is made.
 
 }
 
@@ -107,4 +133,4 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
 }
 
 
-export {getTransaction, makeTransaction, getCustomerTransactions}
+export {getTransaction, makeTransaction, getCustomerTransactions, getMonthlyRecord}
