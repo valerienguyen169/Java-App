@@ -9,7 +9,7 @@ import { addTransaction,
   transactionBelongsToCustomer } from '../models/TransactionModel';
 import { getAccountByAccountNumber, updateAccountByAccountNumber } from '../models/AccountModel';
 import { Transactions, TransactionIdParam } from '../types/transaction';
-import { AccountIdParam, Account } from '../types/account';
+import { AccountIdParam } from '../types/account';
 import { CustomerIdParam, CustomerInfo } from '../types/customerInfo';
 
 async function getTransaction(req: Request, res: Response): Promise<void> {
@@ -138,8 +138,7 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
 }
 
 async function accumulateInterest(req: Request, res: Response): Promise<void>{
-  const {accountNumber, accountName, interest} = req.body as Account;
-  let {currentBalance} = req.body as Account;
+  const {accountNumber} = req.params as AccountIdParam;
   const date = new Date();
   const account = await getAccountByAccountNumber(accountNumber);
   const customer = await getCustomerByAccountNumber(accountNumber);
@@ -151,11 +150,11 @@ async function accumulateInterest(req: Request, res: Response): Promise<void>{
     res.sendStatus(404); // no account found.
     return;
   }
-  if(accountName === 'Checking'){
+  if(account.accountName === 'Checking'){
     res.sendStatus(400); //Checking accounts can't accumulate interest.
   }
-  const interestAmount = (currentBalance * interest);
-  currentBalance += interestAmount;
+  const interestAmount = (account.currentBalance * account.interest);
+  account.currentBalance += interestAmount;
   account.currentBalance += interestAmount;
   const transaction = await addInterest(interestAmount, date, accountNumber, customer);
   updateAccountByAccountNumber(accountNumber, account);

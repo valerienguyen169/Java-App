@@ -9,7 +9,7 @@ import {
   validatePasswordUpdateBody,
 } from './validators/authValidator';
 import { getAccount, getCustomerAccounts } from './controllers/AccountController';
-import { getCustomerTransactions, makeTransaction } from './controllers/TransactionController';
+import { getCustomerTransactions, makeTransaction, accumulateInterest } from './controllers/TransactionController';
 import {
   registerUser,
   logIn,
@@ -77,6 +77,7 @@ app.get('/accounts/:customerId', getCustomerAccounts);
 // Transaction
 app.post('/api/transactions', makeTransaction);
 app.get('/transactions/:customerId', getCustomerTransactions);
+app.post('/api/transactions', accumulateInterest);
 
 app.listen(PORT, () => {
   console.log(`server listening on http://localhost:${PORT}`);
