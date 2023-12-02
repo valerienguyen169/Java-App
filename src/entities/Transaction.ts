@@ -15,8 +15,14 @@ export class Transaction {
   @Column({ nullable: true })
   type: string;
 
+  @Column({nullable: true})
+  bankType: string;
+
   @Column({ nullable: false })
   accountNo: number;
+
+  @Column({nullable: true})
+  otherAccountNo: number;
 
   @ManyToOne(() => Customer, (customer) => customer.transactions, {
     cascade: ['insert', 'update'],

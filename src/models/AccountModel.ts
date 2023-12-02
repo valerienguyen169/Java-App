@@ -70,7 +70,6 @@ async function updateAccountByAccountNumber( accountNumber: number, newAccount: 
 
 
 export {
-  addAccount,
   AccountBelongsToCustomer,
   getAccountByAccountNumber,
   updateAccountByAccountNumber,

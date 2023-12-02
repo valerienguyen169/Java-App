@@ -4,13 +4,29 @@ import { Customer } from '../entities/Customer';
 
 const transactionRepository = AppDataSource.getRepository(Transaction);
 
-async function addTransaction(amount: number, date: Date, type: string, accountNo: number, customer: Customer): Promise<Transaction> {
+async function addTransaction(amount: number, date: Date, type: string, bankType: string, accountNo: number, otherAccountNo: number, customer: Customer): Promise<Transaction> {
   let newTransaction = new Transaction();
   newTransaction.amount = amount;
   newTransaction.date = date;
   if (type !== undefined) {
     newTransaction.type = type;
   }
+  if(bankType !== undefined) {
+    newTransaction.bankType = bankType;
+  }
+  newTransaction.accountNo = accountNo;
+  newTransaction.otherAccountNo = otherAccountNo;
+  newTransaction.customer = customer;
+
+  newTransaction = await transactionRepository.save(newTransaction);
+
+  return newTransaction;
+}
+
+async function addInterest(amount: number, date: Date, accountNo: number, customer: Customer): Promise<Transaction> {
+  let newTransaction = new Transaction();
+  newTransaction.amount = amount;
+  newTransaction.date = date;
   newTransaction.accountNo = accountNo;
   newTransaction.customer = customer;
 
@@ -30,6 +46,7 @@ async function getTransactionById(transactionId: string): Promise<Transaction | 
       'transaction.date',
       'transaction.type',
       'transaction.accountNo',
+      'transaction.otherAccountNo',
       'customer.customerId',
     ])
     .getOne();
@@ -75,6 +92,7 @@ async function transactionBelongsToCustomer(
 
 export {
   addTransaction,
+  addInterest,
   getTransactionById,
   getTransactionsByCustomerId,
   updateTransactionById,

@@ -1,5 +1,5 @@
 type Account = {
-  accountNumber: string;
+  accountNumber: number;
   accountName: string;
   currentBalance: number;
   routingNumber: string;

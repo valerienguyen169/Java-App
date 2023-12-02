@@ -1,4 +1,4 @@
-type Transaction = {
+type Transactions = {
   transactionID: string;
   amount: number;
   date: Date;

@@ -1,16 +1,15 @@
 import { Request, Response } from 'express';
-import { Transaction } from '../entities/Transaction';
 import argon2 from 'argon2';
 import { parseDatabaseError } from '../utils/db-utils';
 import { getCustomerById, getCustomerByAccountNumber } from '../models/CustomerModel';
 import { addTransaction,
+  addInterest,
   getTransactionById,
   getTransactionsByCustomerId,
-  updateTransactionById,
   transactionBelongsToCustomer } from '../models/TransactionModel';
 import { getAccountByAccountNumber, updateAccountByAccountNumber } from '../models/AccountModel';
-import { Transaction, TransactionIdParam } from '../types/transaction';
-import { AccountIdParam } from '../types/account';
+import { Transactions, TransactionIdParam } from '../types/transaction';
+import { AccountIdParam, Account } from '../types/account';
 import { CustomerIdParam, CustomerInfo } from '../types/customerInfo';
 
 async function getTransaction(req: Request, res: Response): Promise<void> {
@@ -69,16 +68,16 @@ async function getMonthlyRecord(req: Request, res: Response): Promise<void> {
 
 async function makeTransaction(req: Request, res: Response): Promise<void> {
   const {authenticatedCustomer, isLoggedIn} = req.session;
-  const {amount, date, type, accountNo} = req.body as Transaction;
-  const {accountNumber} = req.params as AccountIdParam;
+  const {amount, date, type, accountNo, otherAccountNo} = req.body as Transactions;
+  let bankType = '';
   if (!isLoggedIn){
     res.redirect('/login');
     return;
   }
   const customer = await getCustomerById(authenticatedCustomer.customerId);
-  const account = await getAccountByAccountNumber(accountNumber);
-  const otherCustomer = await getCustomerByAccountNumber(accountNo);
-  const otherAccount = await getAccountByAccountNumber(accountNo);
+  const account = await getAccountByAccountNumber(accountNo);
+  const otherAccount = await getAccountByAccountNumber(otherAccountNo);
+  const otherCustomer = await getCustomerByAccountNumber(otherAccountNo);
   let otherType = '';
   if (!customer){
     res.sendStatus(404);
@@ -88,15 +87,15 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
     res.sendStatus(404);
     return;
   }
-  if (!otherCustomer){
-    res.sendStatus(404);
-    return;
-  }
   if (!otherAccount){
     res.sendStatus(404);
     return;
   }
-  if(accountNumber === accountNo){
+  if (!otherCustomer){
+    res.sendStatus(404);
+    return;
+  }
+  if(accountNo === otherAccountNo){
     res.sendStatus(400); // this would do nothing. Possibly a redirect as well
     return;
   }
@@ -109,8 +108,14 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
       res.sendStatus(403); // can't have negative balance. Turn into redirect later
       return;
     }
+    if( account.routingNumber === otherAccount.routingNumber ){
+      bankType = 'InterBank';
+    }
+    else if (account.routingNumber !== otherAccount.routingNumber){
+      bankType = 'IntraBank';
+    }
     account.currentBalance = account.currentBalance + amount;
-    updateAccountByAccountNumber(accountNumber, account);
+    updateAccountByAccountNumber(accountNo, account);
     otherAccount.currentBalance = otherAccount.currentBalance - amount;
     otherType = 'Withdrawal';
     updateAccountByAccountNumber(accountNo, otherAccount);
@@ -121,16 +126,40 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
       return;
     }
     account.currentBalance = account.currentBalance - amount;
-    updateAccountByAccountNumber(accountNumber, account);
+    updateAccountByAccountNumber(accountNo, account);
     otherAccount.currentBalance = otherAccount.currentBalance + amount;
     otherType = 'Deposit';
     updateAccountByAccountNumber(accountNo, otherAccount);
   }
-  const transaction = await addTransaction(amount, date, type, accountNumber, customer);
-  const otherTransaction = await addTransaction(amount, date, otherType, accountNo, otherCustomer);
+  const transaction = await addTransaction(amount, date, type, bankType, accountNo, otherAccountNo, customer);
+  const otherTransaction = await addTransaction(amount, date, otherType, bankType, otherAccountNo, accountNo, otherCustomer);
   transaction.customer = undefined;
   otherTransaction.customer = undefined;
 }
 
+async function accumulateInterest(req: Request, res: Response): Promise<void>{
+  const {accountNumber, accountName, interest} = req.body as Account;
+  let {currentBalance} = req.body as Account;
+  const date = new Date();
+  const account = await getAccountByAccountNumber(accountNumber);
+  const customer = await getCustomerByAccountNumber(accountNumber);
+  if (!customer){
+    res.sendStatus(404);
+    return;
+  }
+  if (!account){
+    res.sendStatus(404); // no account found.
+    return;
+  }
+  if(accountName === 'Checking'){
+    res.sendStatus(400); //Checking accounts can't accumulate interest.
+  }
+  const interestAmount = (currentBalance * interest);
+  currentBalance += interestAmount;
+  account.currentBalance += interestAmount;
+  const transaction = await addInterest(interestAmount, date, accountNumber, customer);
+  updateAccountByAccountNumber(accountNumber, account);
+  transaction.customer = undefined;
+}
 
-export {getTransaction, makeTransaction, getCustomerTransactions, getMonthlyRecord}
+export {getTransaction, makeTransaction, getCustomerTransactions, getMonthlyRecord, accumulateInterest}
