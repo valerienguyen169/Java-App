@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import argon2 from 'argon2';
 import { parseDatabaseError } from '../utils/db-utils';
-import { getCustomerById, getCustomerByAccountNumber } from '../models/CustomerModel';
+import { getCustomerById, } from '../models/CustomerModel';
 import { addTransaction,
   addInterest,
   getTransactionById,
@@ -68,7 +68,7 @@ async function getMonthlyRecord(req: Request, res: Response): Promise<void> {
 
 async function makeTransaction(req: Request, res: Response): Promise<void> {
   const {authenticatedCustomer, isLoggedIn} = req.session;
-  const {amount, date, type, accountNo, otherAccountNo} = req.body as Transactions;
+  const {customerId, amount, date, type, accountNo, otherAccountNo} = req.body as Transactions;
   let bankType = '';
   if (!isLoggedIn){
     res.redirect('/login');
@@ -77,7 +77,7 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
   const customer = await getCustomerById(authenticatedCustomer.customerId);
   const account = await getAccountByAccountNumber(accountNo);
   const otherAccount = await getAccountByAccountNumber(otherAccountNo);
-  const otherCustomer = await getCustomerByAccountNumber(otherAccountNo);
+  const otherCustomer = await getCustomerById(customerId);
   let otherType = '';
   if (!customer){
     res.sendStatus(404);
@@ -131,8 +131,8 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
     otherType = 'Deposit';
     updateAccountByAccountNumber(accountNo, otherAccount);
   }
-  const transaction = await addTransaction(amount, date, type, bankType, accountNo, otherAccountNo, customer);
-  const otherTransaction = await addTransaction(amount, date, otherType, bankType, otherAccountNo, accountNo, otherCustomer);
+  const transaction = await addTransaction(customerId, amount, date, type, bankType, accountNo, otherAccountNo, customer);
+  const otherTransaction = await addTransaction(authenticatedCustomer.customerId, amount, date, otherType, bankType, otherAccountNo, accountNo, otherCustomer);
   transaction.customer = undefined;
   otherTransaction.customer = undefined;
 }

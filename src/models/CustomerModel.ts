@@ -79,17 +79,6 @@ async function updateEmailAddressById(customerId: string, newEmail: string): Pro
     .execute();
 }
 
-async function getCustomerByAccountNumber(accountNumber: number): Promise<Customer | null> {
-  const customer = await customerRepository
-  .createQueryBuilder('customer')
-  .leftJoinAndSelect('customer.accounts', 'accounts')
-  .where({ accounts: { accountNumber }})
-  .select(['customer', 'accounts.accountNumber'])
-  .getOne();
-
-  return customer;
-}
-
 // async function updateSecondEmailAddressById(
 //   customerId: string,
 //   newSecondEmail: string
@@ -186,7 +175,6 @@ export {
   getCustomerById,
   getCustomerByUserNameAndEmail,
   updateEmailAddressById,
-  getCustomerByAccountNumber,
   // updateSecondEmailAddressById,
   updateAddressById,
   updateCityById,

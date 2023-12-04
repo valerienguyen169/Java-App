@@ -4,8 +4,9 @@ import { Customer } from '../entities/Customer';
 
 const transactionRepository = AppDataSource.getRepository(Transaction);
 
-async function addTransaction(amount: number, date: Date, type: string, bankType: string, accountNo: number, otherAccountNo: number, customer: Customer): Promise<Transaction> {
+async function addTransaction(customerId: string, amount: number, date: Date, type: string, bankType: string, accountNo: number, otherAccountNo: number, customer: Customer): Promise<Transaction> {
   let newTransaction = new Transaction();
+  newTransaction.customerId = customerId;
   newTransaction.amount = amount;
   newTransaction.date = date;
   if (type !== undefined) {
@@ -42,6 +43,7 @@ async function getTransactionById(transactionId: string): Promise<Transaction | 
     .leftJoin('transaction.customer', 'customer')
     .select([
       'transaction.transactionId',
+      'transaction.customerId',
       'transaction.amount',
       'transaction.date',
       'transaction.type',
