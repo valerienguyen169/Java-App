@@ -1,0 +1,14 @@
+<section class="page-body">
+  <% for (const creditCard of allCreditCards) { %>
+    <div class="flex-fill">
+      <div class="data-card">
+        <div class="data-card-heading">
+          <h3><%= creditCard.accountName %></h3>
+        </div>
+        <p>Current Balance: $<%= creditCard.currentBalance.toFixed(2) %></p>
+      </div>
+      <a href="/creditCard/details/<%= customer.customerId %>/<%= creditCard.accountNumber %>">View Card Details ></a>
+    </div>
+    <br>
+  <% } %>
+</section>
