@@ -3,13 +3,18 @@
 let sidebarOpen = false;
 const sidebar = document.getElementById('sidebar');
 
-function toggleSidebar() {
+function openSidebar() {
+  if (!sidebarOpen) {
+    sidebar.classList.add('sidebar-responsive');
+    sidebarOpen = true;
+  }
+}
+
+function closeSidebar() {
   if (sidebarOpen) {
     sidebar.classList.remove('sidebar-responsive');
-  } else {
-    sidebar.classList.add('sidebar-responsive');
+    sidebarOpen = false;
   }
-  sidebarOpen = !sidebarOpen;
 }
 
 // ---------- CHARTS ----------
