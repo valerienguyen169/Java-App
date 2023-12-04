@@ -1,7 +1,73 @@
-<h1>Update Income Page</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Income Page</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+      text-align: left;
+    }
 
-<form method="POST" action="/profile/income">
-  <label for="income">Income:</label>
-  <input type="text" id="income" name="income" value="<%= customer.income %>" required>
-  <button>Update</button>
-</form>
+    h1 {
+      color: #3498db;
+    }
+
+    form {
+      margin-top: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0;
+    }
+
+    input {
+      width: 40%;
+      padding: 8px;
+      margin: 5px 0;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #3498db;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    a {
+      display: block;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #3498db;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Update Income Page</h1>
+
+  <form method="POST" action="/profile/income">
+    <label for="income">Income:</label>
+    <input type="text" id="income" name="income" value="<%= customer.income %>" required>
+
+    <button type="submit">Update</button>
+  </form>
+
+  <br>
+  <a href="/profile">Back to Profile ></a>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<form method="get" action="/creditCard/details/<%= customer.customerId %>/<%= creditCard.accountNumber %>">
+  <h1><%= creditCard.accountName %></h1>
+  <p>Current Balance: <span><%= creditCard.currentBalance %></span></p>
+  <p>Total Limit: <span><%= creditCard.totalLimit %></span></p>
+  <p>Available Limit: <span><%= creditCard.availableLimit %></span></p>
+  <p>APR: <span><%= creditCard.apr %></span></p>
+  <p>Statement Balance: <span><%= creditCard.statementBalance %></span></p>
+  <p>Minimum Payment Due: <span><%= creditCard.minimumPaymentDue %></span></p>
+  <p>Payment Due Date: <span><%= creditCard.paymentDueDate %></span></p>
+  <p>Closing Date: <span><%= creditCard.closingDate %></span></p>
+  <br>
+</form>
