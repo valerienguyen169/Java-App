@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Page</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+      text-align: left;
+    }
+
+    h2 {
+      color: #3498db;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    a {
+      display: block;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #3498db;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h2>Contact Information</h2>
+
+  <p><strong>Email:</strong> <%= customer.email %></p>
+  <p><strong>Phone:</strong> <%= customer.phone %></p>
+  <p><strong>Address:</strong> <%= customer.address %>, <%= customer.city %>, <%= customer.state %> <%= customer.zip %></p>
+  <a href="/profile/contact/update">Edit Contact Info ></a>
+  <a href="/profile">Back to Profile ></a>
+
+</body>
+</html>

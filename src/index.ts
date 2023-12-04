@@ -9,7 +9,11 @@ import {
   validatePasswordUpdateBody,
 } from './validators/authValidator';
 import { getAccount, getCustomerAccounts } from './controllers/AccountController';
-import { getCustomerTransactions, makeTransaction, accumulateInterest } from './controllers/TransactionController';
+import {
+  getCustomerTransactions,
+  makeTransaction,
+  accumulateInterest,
+} from './controllers/TransactionController';
 import {
   registerUser,
   logIn,
@@ -22,7 +26,16 @@ import {
   renderUsernamePage,
   updatePassword,
   renderPasswordPage,
+  renderContactPage,
+  updateContactInfo,
+  renderContactUpdatePage,
 } from './controllers/CustomerController';
+import {
+  addNewCreditCard,
+  renderCreateCreditCardPage,
+  getAllCreditCardByCustomer,
+  getCreditCard,
+} from './controllers/CreditCardController';
 
 const app: Express = express();
 app.set('view engine', 'ejs');
@@ -63,6 +76,15 @@ app.get('/profile/username', renderUsernamePage);
 app.post('/profile/username', updateUsername);
 app.get('/profile/password', renderPasswordPage);
 app.post('/profile/password', validatePasswordUpdateBody, updatePassword);
+app.get('/profile/contact', renderContactPage);
+app.post('/profile/contact/update', updateContactInfo);
+app.get('/profile/contact/update', renderContactUpdatePage);
+
+// Credit Card
+app.post('/creditCard/add', addNewCreditCard);
+app.get('/creditCard/add', renderCreateCreditCardPage);
+app.get('/creditCard', getAllCreditCardByCustomer);
+app.get('/creditCard/details/:customerId/:accountNumber', getCreditCard);
 
 app.get('/ping', (req, res) => {
   // Update the session timestamp to keep it alive

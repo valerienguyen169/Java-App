@@ -126,6 +126,15 @@ async function updateZipById(customerId: string, newZip: string): Promise<void> 
     .execute();
 }
 
+async function updatePhoneById(customerId: string, newPhone: string): Promise<void> {
+  await customerRepository
+    .createQueryBuilder()
+    .update(Customer)
+    .set({ phone: newPhone })
+    .where({ customerId })
+    .execute();
+}
+
 async function updateIncomeById(customerId: string, newIncome: number): Promise<void> {
   await customerRepository
     .createQueryBuilder()
@@ -176,6 +185,7 @@ export {
   getCustomerByUserNameAndEmail,
   updateEmailAddressById,
   // updateSecondEmailAddressById,
+  updatePhoneById,
   updateAddressById,
   updateCityById,
   updateStateById,

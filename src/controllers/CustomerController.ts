@@ -13,6 +13,12 @@ import {
   updateIncomeById,
   updateUsernameById,
   updatePasswordById,
+  updateEmailAddressById,
+  updatePhoneById,
+  updateAddressById,
+  updateCityById,
+  updateStateById,
+  updateZipById,
 } from '../models/CustomerModel';
 import { parseDatabaseError } from '../utils/db-utils';
 import { AuthRequest, LoginAuthRequest } from '../types/customerInfo';
@@ -315,6 +321,89 @@ async function updatePassword(req: Request, res: Response): Promise<void> {
   res.redirect(`/profile`);
 }
 
+async function renderContactPage(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer } = req.session;
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+
+  const customer = await getCustomerById(customerId);
+
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  res.render('customer/contactPage', { customer });
+}
+
+async function renderContactUpdatePage(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer } = req.session;
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+
+  const customer = await getCustomerById(customerId);
+
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  res.render('customer/updateContactPage', { customer });
+}
+
+async function updateContactInfo(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer } = req.session;
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+  const { email, phone, address, city, state, zip } = req.body as {
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+
+  const customer = await getCustomerById(customerId);
+
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  // Now update their place using try/catch block
+  try {
+    await updateEmailAddressById(customerId, email);
+    await updatePhoneById(customerId, phone);
+    await updateAddressById(customerId, address);
+    await updateCityById(customerId, city);
+    await updateStateById(customerId, state);
+    await updateZipById(customerId, zip);
+  } catch (err) {
+    // There could be invalid input
+    console.error(err);
+    const databaseErrorMessage = parseDatabaseError(err);
+    res.status(500).json(databaseErrorMessage);
+    return;
+  }
+  res.redirect(`/profile`);
+}
+
 export {
   registerUser,
   logIn,
@@ -327,4 +416,7 @@ export {
   renderUsernamePage,
   updatePassword,
   renderPasswordPage,
+  renderContactPage,
+  renderContactUpdatePage,
+  updateContactInfo,
 };

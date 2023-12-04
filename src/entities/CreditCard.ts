@@ -1,9 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Relation } from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne, Relation } from 'typeorm';
 import { Customer } from './Customer';
 
 @Entity()
 export class CreditCard {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   accountNumber: string;
 
   @Column({ nullable: false })
