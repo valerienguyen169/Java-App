@@ -62,7 +62,6 @@ async function getCreditCard(req: Request, res: Response): Promise<void> {
     const creditCard = await getCreditCardByAccountNumber(accountNumber);
     console.log(creditCard);
     res.render('creditCard/creditCardDetail', { customer, creditCard });
-    // res.json(creditCard);
   } catch (err) {
     console.error(err);
     const databaseErrorMessage = parseDatabaseError(err);
