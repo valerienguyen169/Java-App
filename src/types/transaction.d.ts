@@ -4,6 +4,7 @@ type Transactions = {
   date: Date;
   type?: string;
   accountNo: number,
+  customerId: string,
 };
 
 type TransactionIdParam = {
