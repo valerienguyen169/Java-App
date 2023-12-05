@@ -1,6 +1,4 @@
 import { Request, Response } from 'express';
-import argon2 from 'argon2';
-import { parseDatabaseError } from '../utils/db-utils';
 import { getCustomerById } from '../models/CustomerModel';
 import {
   addTransaction,
@@ -11,7 +9,6 @@ import {
 } from '../models/TransactionModel';
 import { getAccountByAccountNumber, updateAccountByAccountNumber } from '../models/AccountModel';
 import { Transactions, TransactionIdParam } from '../types/transaction';
-import { AccountIdParam } from '../types/account';
 import { CustomerIdParam, CustomerInfo } from '../types/customerInfo';
 
 async function getTransaction(req: Request, res: Response): Promise<void> {
@@ -58,7 +55,7 @@ async function getMonthlyRecord(req: Request, res: Response): Promise<void> {
   }
   const record = [];
   const transactions = await getTransactionsByCustomerId(customerId);
-  for (let i = 0; i < transactions.length; i++) {
+  for (let i = 0; i < transactions.length; i += 1) {
     if (transactions[i].date >= lastMonth && transactions[i].date < monthStart) {
       record.push(transactions[i]);
     }
@@ -150,15 +147,15 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
     accountNo,
     otherCustomer
   );
-  transaction.customer = undefined;
-  otherTransaction.customer = undefined;
+  console.log(transaction);
+  console.log(otherTransaction);
 }
 
 async function accumulateInterest(req: Request, res: Response): Promise<void> {
-  const { accountNumber } = req.params as AccountIdParam;
+  const { accountNumber, customerId } = req.body as Transactions;
   const date = new Date();
   const account = await getAccountByAccountNumber(accountNumber);
-  const customer = await getCustomerByAccountNumber(accountNumber);
+  const customer = await getCustomerById(customerId);
   if (!customer) {
     res.sendStatus(404);
     return;
@@ -175,7 +172,7 @@ async function accumulateInterest(req: Request, res: Response): Promise<void> {
   account.currentBalance += interestAmount;
   const transaction = await addInterest(interestAmount, date, accountNumber, customer);
   updateAccountByAccountNumber(accountNumber, account);
-  transaction.customer = undefined;
+  console.log(transaction);
 }
 
 export {

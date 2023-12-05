@@ -6,7 +6,7 @@ export class Transaction {
   @PrimaryGeneratedColumn('uuid')
   transactionId: string;
 
-  @Column({nullable: false})
+  @Column({ nullable: false })
   customerId: string;
 
   @Column({ nullable: false })
@@ -18,13 +18,13 @@ export class Transaction {
   @Column({ nullable: true })
   type: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   bankType: string;
 
   @Column({ nullable: false })
   accountNo: number;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   otherAccountNo: number;
 
   @ManyToOne(() => Customer, (customer) => customer.transactions, {
