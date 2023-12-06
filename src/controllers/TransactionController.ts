@@ -152,9 +152,9 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
 }
 
 async function accumulateInterest(req: Request, res: Response): Promise<void> {
-  const { accountNumber, customerId } = req.body as Transactions;
+  const { accountNo, customerId } = req.body as Transactions;
   const date = new Date();
-  const account = await getAccountByAccountNumber(accountNumber);
+  const account = await getAccountByAccountNumber(accountNo);
   const customer = await getCustomerById(customerId);
   if (!customer) {
     res.sendStatus(404);
@@ -170,8 +170,8 @@ async function accumulateInterest(req: Request, res: Response): Promise<void> {
   const interestAmount = account.currentBalance * account.interest;
   account.currentBalance += interestAmount;
   account.currentBalance += interestAmount;
-  const transaction = await addInterest(interestAmount, date, accountNumber, customer);
-  updateAccountByAccountNumber(accountNumber, account);
+  const transaction = await addInterest(interestAmount, date, accountNo, customer);
+  updateAccountByAccountNumber(accountNo, account);
   console.log(transaction);
 }
 

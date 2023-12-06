@@ -9,7 +9,7 @@ import { CustomerInfo, CustomerIdParam } from '../types/customerInfo';
 import { getCustomerById } from '../models/CustomerModel';
 
 async function getAccount(req: Request, res: Response): Promise<void> {
-  const { accountNumber } = req.params as AccountIdParam;
+  const { accountNumber } = req.body as AccountIdParam;
   const { customerId } = req.body as CustomerInfo;
 
   const account = await getAccountByAccountNumber(accountNumber);
