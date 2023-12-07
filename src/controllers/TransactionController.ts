@@ -7,7 +7,11 @@ import {
   getTransactionsByCustomerId,
   transactionBelongsToCustomer,
 } from '../models/TransactionModel';
-import { getAccountByAccountNumber, updateAccountByAccountNumber } from '../models/AccountModel';
+import {
+  getAccountByAccountNumber,
+  updateAccountByAccountNumber,
+  AccountBelongsToCustomer,
+} from '../models/AccountModel';
 import { Transactions, TransactionIdParam } from '../types/transaction';
 import { CustomerIdParam, CustomerInfo } from '../types/customerInfo';
 
@@ -75,6 +79,8 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
   const account = await getAccountByAccountNumber(accountNo);
   const otherAccount = await getAccountByAccountNumber(otherAccountNo);
   const otherCustomer = await getCustomerById(customerId);
+  const belongs = await AccountBelongsToCustomer(accountNo, authenticatedCustomer.customerId);
+  const otherBelongs = await AccountBelongsToCustomer(otherAccountNo, customerId);
   let otherType = '';
   if (!customer) {
     res.sendStatus(404);
@@ -89,6 +95,14 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
     return;
   }
   if (!otherCustomer) {
+    res.sendStatus(404);
+    return;
+  }
+  if (!belongs) {
+    res.sendStatus(404);
+    return;
+  }
+  if (!otherBelongs) {
     res.sendStatus(404);
     return;
   }
