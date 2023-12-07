@@ -18,6 +18,9 @@ export class Account {
   @Column({ nullable: true })
   interest: number;
 
+  @Column({ nullable: true })
+  interestType: string;
+
   @ManyToOne(() => Customer, (customer) => customer.accounts, {
     cascade: ['insert', 'update'],
   })

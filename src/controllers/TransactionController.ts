@@ -168,8 +168,23 @@ async function accumulateInterest(req: Request, res: Response): Promise<void> {
     res.sendStatus(400); // Checking accounts can't accumulate interest.
   }
   const interestAmount = account.currentBalance * account.interest;
-  account.currentBalance += interestAmount;
-  account.currentBalance += interestAmount;
+  if (account.interestType === 'Yearly') {
+    if (date.getMonth() === 0 && date.getDate() === 1) {
+      account.currentBalance += interestAmount;
+    }
+  } else if (account.interestType === 'Monthly') {
+    if (date.getDate() === 1) {
+      account.currentBalance += interestAmount;
+    }
+  } else if (account.interestType === 'Weekly') {
+    if (date.getDay() === 0) {
+      account.currentBalance += interestAmount;
+    }
+  } else if (account.interestType === 'Daily') {
+    if (date.getHours() === 0) {
+      account.currentBalance += interestAmount;
+    }
+  }
   const transaction = await addInterest(interestAmount, date, accountNo, customer);
   updateAccountByAccountNumber(accountNo, account);
   console.log(transaction);

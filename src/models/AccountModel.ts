@@ -1,6 +1,5 @@
 import { AppDataSource } from '../dataSource';
 import { Account } from '../entities/Account';
-import { Customer } from '../entities/Customer';
 
 const AccountRepository = AppDataSource.getRepository(Account);
 
@@ -30,6 +29,7 @@ async function getAccountByAccountNumber(accountNumber: number): Promise<Account
       'account.currentBalance',
       'account.routingNumber',
       'account.interest',
+      'account.interestType',
       'customer.customerId',
     ])
     .getOne();
