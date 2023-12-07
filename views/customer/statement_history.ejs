@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Statement History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #e70606b8;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgb(160, 220, 22);
+        }
+    </style>
+</head>
+<body>
+
+<h1>Transfer Statement History</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>From Account</th>
+            <th>To Account</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody id="statementTableBody">
+        <!-- Statement history will be added here dynamically using JavaScript -->
+    </tbody>
+</table>
+
+<script>
+    function transferMoney() {
+        // Assuming you have a function to perform the money transfer logic
+        // For simplicity, we are using random data here
+        const fromAccount = "123456";
+        const toAccount = "789012";
+        const amount = 100.00;
+        const date = new Date().toLocaleString();
+
+        // Update statement history table
+        const statementTableBody = document.getElementById("statementTableBody");
+        const newRow = document.createElement("tr");
+        newRow.innerHTML = `
+            <td>${date}</td>
+            <td>${fromAccount}</td>
+            <td>${toAccount}</td>
+            <td>${amount}</td>
+        `;
+        statementTableBody.insertBefore(newRow, statementTableBody.firstChild);
+    }
+</script>
+
+<button onclick="transferMoney()">Transfer Money</button>
+
+</body>
+</html>

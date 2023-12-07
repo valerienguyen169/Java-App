@@ -1,9 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, Relation } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne, Relation } from 'typeorm';
 import { Customer } from './Customer';
 
 @Entity()
 export class Account {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn()
   accountNumber: number;
 
   @Column({ nullable: false })

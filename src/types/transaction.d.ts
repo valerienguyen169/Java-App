@@ -3,6 +3,7 @@ type Transactions = {
   amount: number;
   date: Date;
   type?: string;
+  bankType?: string;
   accountNo: number;
   customerId: string;
   otherAccountNo: number;

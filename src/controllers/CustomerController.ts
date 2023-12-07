@@ -404,6 +404,26 @@ async function updateContactInfo(req: Request, res: Response): Promise<void> {
   res.redirect(`/profile`);
 }
 
+async function renderUserGuidePage(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer } = req.session;
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+
+  const customer = await getCustomerById(customerId);
+
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  res.render('userGuide', { customer });
+}
+
 export {
   registerUser,
   logIn,
@@ -419,4 +439,5 @@ export {
   renderContactPage,
   renderContactUpdatePage,
   updateContactInfo,
+  renderUserGuidePage,
 };
