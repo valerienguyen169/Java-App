@@ -8,10 +8,11 @@ import {
   validateLoginBody,
   validatePasswordUpdateBody,
 } from './validators/authValidator';
-import { getAccount, getCustomerAccounts } from './controllers/AccountController';
+import { getAccount, getCustomerAccounts, addAccount } from './controllers/AccountController';
 import {
   getCustomerTransactions,
   makeTransaction,
+  getMonthlyRecord,
   accumulateInterest,
 } from './controllers/TransactionController';
 import {
@@ -93,6 +94,7 @@ app.get('/ping', (req, res) => {
 });
 
 // Account
+app.post('/api/accounts/', addAccount);
 app.get('/accounts/:accountNumber', getAccount);
 app.get('/accounts/:customerId', getCustomerAccounts);
 
@@ -100,6 +102,7 @@ app.get('/accounts/:customerId', getCustomerAccounts);
 app.post('/api/transactions', makeTransaction);
 app.get('/transactions/:customerId', getCustomerTransactions);
 app.post('/api/transactions', accumulateInterest);
+app.get('/transactions/:date/:customerId', getMonthlyRecord);
 
 app.listen(PORT, () => {
   console.log(`server listening on http://localhost:${PORT}`);

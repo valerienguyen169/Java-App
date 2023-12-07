@@ -1,22 +1,22 @@
 import { AppDataSource } from '../dataSource';
 import { Account } from '../entities/Account';
+import { Customer } from '../entities/Customer';
 
 const AccountRepository = AppDataSource.getRepository(Account);
 
-// async function addAccount(account: Account, customer: Customer): Promise<Account> {
-//  let newAccount = new Account();
-//  newAccount.accountNumber = account.accountNumber;
-//  newAccount.accountName = account.accountName;
-//  newAccount.currentBalance = account.currentBalance;
-//  newAccount.routingNumber = account.routingNumber;
-//  newAccount.interest = account.interest;
-//
-//  newAccount.customer = customer;
-//
-//  newAccount = await AccountRepository.save(newAccount);
-//
-//  return newAccount;
-// }
+async function createAccount(account: Account, customer: Customer): Promise<Account> {
+  let newAccount = new Account();
+  newAccount.accountNumber = account.accountNumber;
+  newAccount.accountName = account.accountName;
+  newAccount.currentBalance = account.currentBalance;
+  newAccount.routingNumber = account.routingNumber;
+  newAccount.interest = account.interest;
+
+  newAccount.customer = customer;
+
+  newAccount = await AccountRepository.save(newAccount);
+  return newAccount;
+}
 // we may not need this function if we have databases
 
 async function getAccountByAccountNumber(accountNumber: number): Promise<Account | null> {
@@ -75,4 +75,5 @@ export {
   getAccountByAccountNumber,
   updateAccountByAccountNumber,
   getAccountsByCustomerId,
+  createAccount,
 };
