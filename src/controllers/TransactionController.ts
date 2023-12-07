@@ -169,21 +169,39 @@ async function accumulateInterest(req: Request, res: Response): Promise<void> {
   }
   const interestAmount = account.currentBalance * account.interest;
   if (account.interestType === 'Yearly') {
-    if (date.getMonth() === 0 && date.getDate() === 1) {
+    if (
+      date.getMonth() === 0 &&
+      date.getDate() === 1 &&
+      date.getHours() === 0 &&
+      date.getMinutes() === 0 &&
+      date.getSeconds() === 0
+    ) {
       account.currentBalance += interestAmount;
     }
   } else if (account.interestType === 'Monthly') {
-    if (date.getDate() === 1) {
+    if (
+      date.getDate() === 1 &&
+      date.getHours() === 0 &&
+      date.getMinutes() === 0 &&
+      date.getSeconds() === 0
+    ) {
       account.currentBalance += interestAmount;
     }
   } else if (account.interestType === 'Weekly') {
-    if (date.getDay() === 0) {
+    if (
+      date.getDay() === 0 &&
+      date.getHours() === 0 &&
+      date.getMinutes() === 0 &&
+      date.getSeconds() === 0
+    ) {
       account.currentBalance += interestAmount;
     }
   } else if (account.interestType === 'Daily') {
-    if (date.getHours() === 0) {
+    if (date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0) {
       account.currentBalance += interestAmount;
     }
+  } else {
+    res.sendStatus(400); // interestType is specified to be something it isn't
   }
   const transaction = await addInterest(interestAmount, date, accountNo, customer);
   updateAccountByAccountNumber(accountNo, account);
