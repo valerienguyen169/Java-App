@@ -15,12 +15,12 @@ async function addAccount(req: Request, res: Response): Promise<void> {
   const { authenticatedCustomer, isLoggedIn } = req.session;
   const account = req.body as Account;
   if (!isLoggedIn) {
-    res.redirect('/login');
+    res.redirect('/login'); // gotta get logged in first;
     return;
   }
   const customer = await getCustomerById(authenticatedCustomer.customerId);
   if (!customer) {
-    res.sendStatus(404);
+    res.sendStatus(404); // no customer;
     return;
   }
   try {

@@ -13,7 +13,7 @@ async function createAccount(account: Account, customer: Customer): Promise<Acco
   newAccount.interest = account.interest;
 
   newAccount.customer = customer;
-
+  newAccount.customer.accounts.push(newAccount);
   newAccount = await AccountRepository.save(newAccount);
   return newAccount;
 }
