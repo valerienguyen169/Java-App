@@ -1,0 +1,36 @@
+<form method="POST" action="/transaction/add">
+  <p class="form-header">New Transaction</p>
+  <div class="form-field">
+    <label class="info-item" for="transactionId">Transaction Id:</label>
+    <input type="text" id="transactionId" name="transactionId" required>
+  </div>
+  <div class="form-field">
+    <label class="info-item" for="amount">Amount:</label>
+    <input type="text" id="amount" name="amount" required>
+  </div>
+  <div class="form-field">
+    <label class="info-item" for="date">Date:</label>
+    <input type="date" id="date" name="date" required>
+  </div>
+  <div class="form-field">
+    <label class="info-item" for="type">Type:</label>
+    <input type="text" id="type" name="type">
+  </div>
+  <div class="form-field">
+    <label class="info-item" for="bankType">Bank Type:</label>
+    <input type="text" id="bankType" name="bankType">
+  </div>
+  <div class="form-field">
+    <label class="info-item" for="accountNo">Account Number:</label>
+    <input type="text" id="accountNo" name="accountNo" required>
+  </div>
+  <div class="form-field">
+    <label class="info-item" for="customerId">Customer Id:</label>
+    <input type="text" id="customerId" name="customerId" required>
+  </div>
+  <div class="form-field">
+    <label class="info-item" for="otherAccountNo">Other Account Number:</label>
+    <input type="text" id="otherAccountNo" name="otherAccountNo" required>
+  </div>
+  <button class="add-btn">Add Transaction</button>
+</form>
