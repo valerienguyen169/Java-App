@@ -7,8 +7,9 @@
         </div>
         <p>Current Balance: $<%= creditCard.currentBalance.toFixed(2) %></p>
       </div>
-      <a href="/creditCard/details/<%= customer.customerId %>/<%= creditCard.accountNumber %>">View Card Details ></a>
+      <a href="/creditCard/<%= customer.customerId %>/<%= creditCard.accountNumber %>/details">View Card Details ></a>
     </div>
     <br>
   <% } %>
+  <a href="/dashboard">Back to dashboard ></a>
 </section>

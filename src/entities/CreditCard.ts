@@ -3,28 +3,28 @@ import { Customer } from './Customer';
 
 @Entity()
 export class CreditCard {
-  @PrimaryColumn({ type: 'decimal', precision: 10, scale: 2, nullable: false })
+  @PrimaryColumn()
   accountNumber: string;
 
   @Column({ nullable: false })
   accountName: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   currentBalance: number;
 
-  @Column({ nullable: false })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   totalLimit: number;
 
-  @Column({ nullable: false })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   availableLimit: number;
 
-  @Column({ nullable: false })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   apr: number;
 
-  @Column({ nullable: false })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   statementBalance: number;
 
-  @Column({ nullable: false })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   minimumPaymentDue: number;
 
   @Column({ nullable: false })

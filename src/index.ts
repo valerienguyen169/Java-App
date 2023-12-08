@@ -30,12 +30,15 @@ import {
   renderContactPage,
   updateContactInfo,
   renderContactUpdatePage,
+  renderUserGuidePage,
 } from './controllers/CustomerController';
 import {
   addNewCreditCard,
   renderCreateCreditCardPage,
   getAllCreditCardByCustomer,
   getCreditCard,
+  renderPaymentPage,
+  makePayment,
 } from './controllers/CreditCardController';
 
 const app: Express = express();
@@ -81,11 +84,16 @@ app.get('/profile/contact', renderContactPage);
 app.post('/profile/contact/update', updateContactInfo);
 app.get('/profile/contact/update', renderContactUpdatePage);
 
+// User Guide
+app.get('/userGuide', renderUserGuidePage);
+
 // Credit Card
 app.post('/creditCard/add', addNewCreditCard);
 app.get('/creditCard/add', renderCreateCreditCardPage);
 app.get('/creditCard', getAllCreditCardByCustomer);
-app.get('/creditCard/details/:customerId/:accountNumber', getCreditCard);
+app.get('/creditCard/:customerId/:accountNumber/details', getCreditCard);
+app.get('/creditCard/:customerId/:accountNumber/payment', renderPaymentPage);
+app.post('/creditCard/:customerId/:accountNumber/payment', makePayment);
 
 app.get('/ping', (req, res) => {
   // Update the session timestamp to keep it alive
