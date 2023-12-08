@@ -238,17 +238,34 @@
           <p class="font-weight-bold">CREDIT CARD PAYMENT</p>
         </div>
 
-        <form method="post" action="/creditCard/<%= customer.customerId %>/<%= creditCard.accountNumber %>/payment">
-        <h3><%= creditCard.accountName %> (....<%= creditCard.accountNumber.slice(-4) %>)</h3>
-        <span id="currentBalance"><%= creditCard.currentBalance.toFixed(2) %></span>
-        <br />
+        <form
+      method="post"
+      action="/creditCard/<%= customer.customerId %>/<%= creditCard.accountNumber %>/payment"
+    >
+      <label for="accountDropdown">Pay from:</label>
+      <select id="accountDropdown" name="accountDropdown">
+        <% for (const account of allAccounts) { %>
+        <option value="<%= String(account.accountNumber) %>">
+          <%= account.accountName %> (....<%= String(account.accountNumber).slice(-4) %>)
+        </option>
+        <% } %>
+      </select>
+      <br />
+      <h3><%= creditCard.accountName %> (....<%= creditCard.accountNumber.slice(-4) %>)</h3>
+      <h4>
+        Current Balance:
+        $<span id="currentBalance" class="balance-text"
+          ><%= creditCard.currentBalance.toFixed(2) %></span
+        >
+      </h4>
+      <br />
 
-        <label for="paymentAmount">Payment Amount:</label>
-        <input type="number" id="paymentAmount" name="paymentAmount" step="0.01" required />
-        <br />
+      <label for="paymentAmount">Payment Amount: $</label>
+      <input type="number" id="paymentAmount" name="paymentAmount" step="0.01" required />
+      <br />
 
-        <button type="submit" id="makePaymentButton">Make Payment</button>
-      </form>
+      <button type="submit" id="makePaymentButton">Make Payment</button>
+    </form>
 
       <a href="/creditCard">Back to Credit Card Page</a>
 

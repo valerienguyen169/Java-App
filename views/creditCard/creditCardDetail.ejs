@@ -225,12 +225,12 @@
         <div class="account-container">
             <form method="get" action="/creditCard/<%= customer.customerId %>/<%= creditCard.accountNumber %>/details">
                 <h1><%= creditCard.accountName %></h1>
-                <p>Current Balance: <span><%= Number(creditCard.currentBalance).toFixed(2) %></span></p>
-                <p>Total Limit: <span><%= Number(creditCard.totalLimit).toFixed(2) %></span></p>
-                <p>Available Limit: <span><%= Number(creditCard.availableLimit).toFixed(2) %></span></p>
-                <p>APR: <span><%= Number(creditCard.apr).toFixed(2) %></span></p>
-                <p>Statement Balance: <span><%= Number(creditCard.statementBalance).toFixed(2) %></span></p>
-                <p>Minimum Payment Due: <span><%= Number(creditCard.minimumPaymentDue).toFixed(2) %></span></p>
+                <p>Current Balance: $<span><%= Number(creditCard.currentBalance).toFixed(2) %></span></p>
+                <p>Total Limit: $<span><%= Number(creditCard.totalLimit).toFixed(2) %></span></p>
+                <p>Available Limit: $<span><%= Number(creditCard.availableLimit).toFixed(2) %></span></p>
+                <p>APR: <span><%= Number(creditCard.apr).toFixed(2) %></span>%</p>
+                <p>Statement Balance: $<span><%= Number(creditCard.statementBalance).toFixed(2) %></span></p>
+                <p>Minimum Payment Due: $<span><%= Number(creditCard.minimumPaymentDue).toFixed(2) %></span></p>
                 <p>Payment Due Date: <span><%= creditCard.paymentDueDate.toLocaleDateString('en-US') %></span></p>
                 <p>Closing Date: <span><%= creditCard.closingDate.toLocaleDateString('en-US') %></span></p>
                 <br>
