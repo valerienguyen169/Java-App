@@ -132,7 +132,7 @@
         margin: 20px;
         text-align: center;
         background-color: rgb(4, 107, 107);
-        color: white; 
+        color: white;
         width: 450px;
 
       }
@@ -140,7 +140,7 @@
       .details-container {
         display: none;
         padding-top: 10px;
-        color: white; 
+        color: white;
       }
 
       .account-container.active .details-container {
@@ -203,7 +203,7 @@
 
         <ul class="sidebar-list">
           <li class="sidebar-list-item">
-            <a href="/dashboard.ejs">
+            <a href="/dashboard">
               <span class="material-icons-outlined">dashboard</span> Dashboard
             </a>
           </li>
@@ -218,12 +218,12 @@
             </a>
           </li>
           <li class="sidebar-list-item">
-            <a href="/creditCardPage.ejs">
-              <span class="material-icons-outlined">credit_card</span> Credit Card 
+            <a href="/creditCard">
+              <span class="material-icons-outlined">credit_card</span> Credit Card
           </li>
-        
+
           <li class="sidebar-list-item">
-            <a href="/profilePage.ejs">
+            <a href="/profile">
               <span class="material-icons-outlined">settings</span> Profile
             </a>
           </li>
@@ -247,7 +247,7 @@
           <p>Current Balance:</p>
           <p id="checkingAmount"></p>
       </div>
-  
+
       <div class="account-container" onclick="toggleDetails(this)">
           <h2>Savings Account</h2>
           <p>Current Balance:</p>
@@ -259,12 +259,12 @@
           </div>
           <div class="arrow">&#9660;</div>
       </div>
-  
+
       <script>
           function toggleDetails(element) {
               element.classList.toggle('active');
           }
-  
+
           // Function to set data in the HTML
           function setData() {
               document.getElementById('checkingAmount').innerText = 'Amount: ' + accountData.checkingAmount;
@@ -273,16 +273,16 @@
               document.getElementById('routingNumber').innerText = 'Routing Number: ' + accountData.routingNumber;
               document.getElementById('interestRate').innerText = 'Interest Rate: ' + accountData.interestRate;
           }
-  
+
           // Set data on page load
           setData();
       </script>
-  
+
       </main>
       <!-- End Main -->
 
     </div>
-   
+
     <!-- ApexCharts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.3/apexcharts.min.js"></script>
   </body>
