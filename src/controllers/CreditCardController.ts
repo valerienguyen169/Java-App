@@ -40,6 +40,29 @@ async function addNewCreditCard(req: Request, res: Response): Promise<void> {
   }
 }
 
+function calculateNewMinimumPaymentDue(newBalance: number): number {
+  let minimumPaymentDue: number;
+
+  if (newBalance <= 35) {
+    minimumPaymentDue = newBalance;
+  } else if (newBalance <= 500) {
+    minimumPaymentDue = 35;
+  } else if (newBalance > 500 && newBalance < 5000) {
+    minimumPaymentDue = 500;
+  } else {
+    const percentage = 5;
+    minimumPaymentDue = (percentage / 100) * newBalance;
+  }
+
+  return parseFloat(minimumPaymentDue.toFixed(2));
+}
+
+function addOneMonth(date: Date): Date {
+  const newDate = new Date(date);
+  newDate.setMonth(newDate.getMonth() + 1);
+  return newDate;
+}
+
 async function getCreditCard(req: Request, res: Response): Promise<void> {
   if (!req.session.isLoggedIn) {
     res.redirect('/login');
@@ -51,7 +74,6 @@ async function getCreditCard(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  // const { customerId } = authenticatedCustomer;
   const customer = await getCustomerById(req.session.authenticatedCustomer.customerId);
   if (!customer) {
     res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
@@ -62,6 +84,29 @@ async function getCreditCard(req: Request, res: Response): Promise<void> {
 
   try {
     const creditCard = await getCreditCardByAccountNumber(accountNumber);
+
+    if (!creditCard) {
+      throw new Error('Credit card not found');
+    }
+
+    let newStatementBalance;
+    let newMinimumPaymentDue;
+    let newClosingDate;
+    let newPaymentDueDate;
+    const currentDate = new Date();
+    if (currentDate > creditCard.closingDate && creditCard.currentBalance > 0) {
+      newStatementBalance = creditCard.currentBalance;
+      newMinimumPaymentDue = calculateNewMinimumPaymentDue(creditCard.currentBalance);
+      newClosingDate = addOneMonth(creditCard.closingDate);
+      newPaymentDueDate = addOneMonth(creditCard.paymentDueDate);
+    }
+
+    await updateCreditCardByAccountNumber(accountNumber, {
+      statementBalance: newStatementBalance,
+      minimumPaymentDue: newMinimumPaymentDue,
+      closingDate: newClosingDate,
+      paymentDueDate: newPaymentDueDate,
+    });
     console.log(creditCard);
     res.render('creditCard/creditCardDetail', { customer, creditCard });
   } catch (err) {
@@ -120,29 +165,6 @@ async function getAllCreditCardByCustomer(req: Request, res: Response): Promise<
   }
 }
 
-function calculateNewMinimumPaymentDue(newBalance: number): number {
-  let minimumPaymentDue: number;
-
-  if (newBalance <= 35) {
-    minimumPaymentDue = newBalance;
-  } else if (newBalance <= 500) {
-    minimumPaymentDue = 35;
-  } else if (newBalance > 500 && newBalance < 5000) {
-    minimumPaymentDue = 500;
-  } else {
-    const percentage = 5;
-    minimumPaymentDue = (percentage / 100) * newBalance;
-  }
-
-  return parseFloat(minimumPaymentDue.toFixed(2));
-}
-
-// function addOneMonth(date: Date): Date {
-//   const newDate = new Date(date);
-//   newDate.setMonth(newDate.getMonth() + 1);
-//   return newDate;
-// }
-
 async function makePayment(req: Request, res: Response): Promise<void> {
   if (!req.session.isLoggedIn) {
     res.redirect('/login');
@@ -186,7 +208,9 @@ async function makePayment(req: Request, res: Response): Promise<void> {
       newStatementBalance = creditCard.currentBalance;
     }
     const newMinimumPaymentDue =
-      paymentAmount > creditCard.minimumPaymentDue ? 0 : calculateNewMinimumPaymentDue(newBalance);
+      paymentAmount > creditCard.minimumPaymentDue
+        ? 0
+        : creditCard.minimumPaymentDue - paymentAmount;
 
     await updateCreditCardByAccountNumber(accountNumber, {
       currentBalance: newBalance,
