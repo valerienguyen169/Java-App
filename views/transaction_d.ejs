@@ -4,35 +4,134 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
-  <title>Money Transfer</title>
+  <title> Send Money</title>
+  <!-- Montserrat Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
   <style>
   body {
-            font-family: Arial, sans-serif;
-            background-color: #d7e0a7;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        background-color: #e6e8ed;
+        color: #666666;
+        font-family: "Montserrat", sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-form {
-  display: grid;
-  grid-template-columns: 1fr 3fr;
-  gap: 10px;
-  margin-top: 20px;
-}
+      .material-icons-outlined {
+        vertical-align: middle;
+        line-height: 1px;
+      }
 
-#container {
-            max-width: 600px;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-        }
+      
+      .grid-container {
+      display: grid;
+      grid-template-columns: 260px 1fr 1fr 1fr;
+      grid-template-rows: 0.2fr 3fr;
+      grid-template-areas:
+        'sidebar header header header'
+        'sidebar main main main';
+      height: 100vh;
+      width: auto; 
+    }
 
+
+      /* ---------- SIDEBAR ---------- */
+
+      #sidebar {
+        grid-area: sidebar;
+        height: 100%;
+        background-color: #21232d;
+        color: #9799ab;
+        overflow-y: auto;
+        transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+      }
+
+      .sidebar-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 20px 20px 20px;
+        margin-bottom: 30px;
+      }
+
+      .sidebar-title > span {
+        display: none;
+      }
+
+      .sidebar-brand {
+        margin-top: 15px;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .sidebar-list {
+        padding: 0;
+        margin-top: 15px;
+        list-style-type: none;
+      }
+
+      .sidebar-list-item {
+        padding: 20px 20px 20px 20px;
+        font-size: 15px;
+      }
+
+      .sidebar-list-item:hover {
+        background-color: rgba(243, 239, 239, 0.989);
+        cursor: pointer;
+      }
+
+      .sidebar-list-item > a {
+        text-decoration: none;
+        color: #9799ab;
+      }
+
+      .sidebar-list-item > i {
+        background-color: rgba(243, 239, 239, 0.989);
+      }
+
+      .sidebar-list-item.credit-card-submenu > a {
+        color: #9799ab;
+      }
+
+      .sidebar-responsive {
+        display: inline !important;
+        position: absolute;
+        /*
+          the z-index of the ApexCharts is 11
+          we want the z-index of the sidebar higher so that
+          the charts are not showing over the sidebar
+          on small screens
+        */
+        z-index: 12 !important;
+
+      }
+      .main-title {
+        display: flex;
+        justify-content: space-between;
+      }
+      .main-title > p {
+        font-size: 30px;
+      }
+
+      form {
+        margin-top: 20px;
+      }
+
+      .main-container {
+      grid-area: main;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: #e6e8ed;
+      display: flex;
+      flex-direction: column;
+    }
         select, input {
             width: 100%;
             padding: 10px;
@@ -55,8 +154,57 @@ form {
   </style>
 </head>
 <body>
-  <div id="container">
-  <h2>Money Transfer</h2>
+  <div class="grid-container">
+    <header id="header" style="grid-area: header; background-color: #fff; padding: 10px; text-align: center;">
+      <h1>Send Money</h1>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <div class="sidebar-title">
+        <div class="sidebar-brand">
+          <span class="material-icons-outlined">bank</span> CS Bank
+        </div>
+      </div>
+
+      <ul class="sidebar-list">
+        <li class="sidebar-list-item">
+          <a href="/dashboard">
+            <span class="material-icons-outlined">dashboard</span> Dashboard
+          </a>
+        </li>
+        <li class="sidebar-list-item">
+          <a href="/transaction">
+            <span class="material-icons-outlined">payment</span> Transactions
+          </a>
+        </li>
+        <li class="sidebar-list-item">
+          <a href="#">
+            <span class="material-icons-outlined">history</span> Statement History
+          </a>
+        </li>
+        <li class="sidebar-list-item">
+          <a href="/creditCard">
+            <span class="material-icons-outlined">credit_card</span> Credit Card
+        </li>
+
+        <li class="sidebar-list-item">
+          <a href="/profile">
+            <span class="material-icons-outlined">settings</span> Profile
+          </a>
+        </li>
+        <li class="sidebar-list-item">
+          <a href="/logout">
+            <span class="material-icons-outlined">logout</span> Logout
+          </a>
+        </li>
+      </ul>
+    </aside>
+    <!-- End Sidebar -->
+
+    <!-- Main -->
+<div class="main-container">
+  <main>
   <form id="transferForm">
 
     <label for="fromAccount">From Account:</label>
@@ -73,6 +221,8 @@ form {
 
     <button type="button" onclick="transferMoney()">Transfer</button>
   </form>
+</main>
+</div>
 </div>
 
   <script>
