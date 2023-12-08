@@ -1,89 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Update Contact Info</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #f2f2f2;
-      margin: 0;
-      padding: 20px;
-      text-align: left;
-    }
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Update Contact</title>
 
-    h2 {
-      color: #3498db;
-    }
+    <!-- Montserrat Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    form {
-      margin-top: 20px;
-    }
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 
-    label {
-      display: block;
-      margin: 10px 0;
-    }
+    <!-- Custom CSS -->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        background-color: #e6e8ed;
+        color: #666666;
+        font-family: "Montserrat", sans-serif;
+      }
 
-    input {
-      width: 40%;
-      padding: 8px;
-      margin: 5px 0;
-      box-sizing: border-box;
-    }
+      .material-icons-outlined {
+        vertical-align: middle;
+        line-height: 1px;
+      }
 
-    button {
-      background-color: #3498db;
-      color: #fff;
-      padding: 10px;
-      border: none;
-      cursor: pointer;
-      margin-top: 20px;
-    }
+      .grid-container {
+        display: grid;
+        grid-template-columns: 260px 1fr 1fr 1fr;
+        grid-template-rows: 0.2fr 3fr;
+        grid-template-areas:
+          "sidebar header header header"
+          "sidebar main main main";
+        height: 100vh;
+      }
 
-    button:hover {
-      background-color: #2980b9;
-    }
+      /* ---------- SIDEBAR ---------- */
 
-    a {
-      display: block;
-      margin-top: 20px;
-      text-decoration: none;
-      color: #3498db;
-    }
+      #sidebar {
+        grid-area: sidebar;
+        height: 100%;
+        background-color: #21232d;
+        color: #9799ab;
+        overflow-y: auto;
+        transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+      }
 
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
+      .sidebar-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 20px 20px 20px;
+        margin-bottom: 30px;
+      }
+
+      .sidebar-title > span {
+        display: none;
+      }
+
+      .sidebar-brand {
+        margin-top: 15px;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .sidebar-list {
+        padding: 0;
+        margin-top: 15px;
+        list-style-type: none;
+      }
+
+      .sidebar-list-item {
+        padding: 20px 20px 20px 20px;
+        font-size: 15px;
+      }
+
+      .sidebar-list-item:hover {
+        background-color: rgba(243, 239, 239, 0.989);
+        cursor: pointer;
+      }
+
+      .sidebar-list-item > a {
+        text-decoration: none;
+        color: #9799ab;
+      }
+
+
+      .sidebar-responsive {
+        display: inline !important;
+        position: absolute;
+        /*
+          the z-index of the ApexCharts is 11
+          we want the z-index of the sidebar higher so that
+          the charts are not showing over the sidebar
+          on small screens
+        */
+        z-index: 12 !important;
+
+      }
+
+      /* ---------- MAIN ---------- */
+
+      .main-container {
+        grid-area: main;
+        overflow-y: auto;
+        padding: 20px 20px;
+        margin-bottom: 40px;
+        font-size: 18px;
+        font-weight: 500px;
+      }
+
+      .main-container a {
+         display: block;
+         margin-top: 20px; /* Adjust the value as needed */
+      }
+
+      .main-title {
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 700;
+      }
+
+      .main-title > p {
+        font-size: 30px;
+        align-items: center ;
+      }
+
+      button {
+            background-color: #1183e0;
+            color: #fff;
+            padding: 10px;
+            border: 0cqmax;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1183e0;
+        }
+
+        form {
+            margin-bottom: 20px; /* Adjust the value as needed */
+        }
+
+
+    </style>
 </head>
+  
 <body>
-  <h2>Update Contact Information</h2>
 
-  <form action="/profile/contact/update" method="POST">
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" value="<%= customer.email %>" required>
+    <div class="grid-container">
 
-    <label for="phone">Phone:</label>
-    <input type="tel" id="phone" name="phone" value="<%= customer.phone %>" required>
+      <!-- Sidebar -->
+      <aside id="sidebar">
+        <div class="sidebar-title">
+          <div class="sidebar-brand">
+            <span class="material-icons-outlined">bank</span> CS Bank
+          </div>
+        </div>
 
-    <label for="address">Address:</label>
-    <input type="text" id="address" name="address" value="<%= customer.address %>" required>
+        <ul class="sidebar-list">
+          <li class="sidebar-list-item">
+            <a href="/dashboard">
+              <span class="material-icons-outlined">dashboard</span> Dashboard
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="/transaction">
+              <span class="material-icons-outlined">payment</span> Transactions
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="#">
+              <span class="material-icons-outlined">history</span> Statement History
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="/creditCard">
+              <span class="material-icons-outlined">credit_card</span> Credit Card
+          </li>
 
-    <label for="city">City:</label>
-    <input type="text" id="city" name="city" value="<%= customer.city %>" required>
+          <li class="sidebar-list-item">
+            <a href="/profile">
+              <span class="material-icons-outlined">settings</span> Profile
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="/logout">
+              <span class="material-icons-outlined">logout</span> Logout
+            </a>
+          </li>
+        </ul>
+      </aside>
+      <!-- End Sidebar -->
 
-    <label for="state">State:</label>
-    <input type="text" id="state" name="state" value="<%= customer.state %>" required>
+      <!-- Main -->
+      <main class="main-container">
+        <div class="main-title">
+          <p class="font-weight-bold">UPDATE CONTACT INFO</p>
+        </div>
 
-    <label for="zip">ZIP Code:</label>
-    <input type="text" id="zip" name="zip" value="<%= customer.zip %>" required>
-    <br>
-    <button type="submit">Save</button>
-  </form>
+        <form action="/profile/contact/update" method="POST">
 
-  <br>
-  <a href="/profile/contact">Back to Contact Info ></a>
-</body>
+        <div class="form-field">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" value="<%= customer.email %>" required>
+        </div>  
+
+        <div class="form-field">
+          <label for="phone">Phone:</label>
+          <input type="tel" id="phone" name="phone" value="<%= customer.phone %>" required>
+        </div>
+
+        <div class="form-field">
+          <label for="address">Address:</label>
+          <input type="text" id="address" name="address" value="<%= customer.address %>" required>
+        </div>
+
+        <div class="form-field">
+          <label for="city">City:</label>
+          <input type="text" id="city" name="city" value="<%= customer.city %>" required>
+        </div>
+
+        <div class="form-field">
+          <label for="state">State:</label>
+          <input type="text" id="state" name="state" value="<%= customer.state %>" required>
+        </div>
+
+        <div class="form-field">
+          <label for="zip">ZIP Code:</label>
+          <input type="text" id="zip" name="zip" value="<%= customer.zip %>" required>
+        </div>
+          <br>
+          <button type="submit">Save</button>
+        </form>
+        <br>
+        <a href="/profile/contact">Back to Contact Info ></a>
+    
+      </main>
+
+    </div>
+  </body>
 </html>
+
