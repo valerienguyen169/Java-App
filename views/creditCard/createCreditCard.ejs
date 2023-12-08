@@ -1,44 +1,302 @@
-<form method="POST" action="/creditCard/add">
-  <p class="form-header">New Credit Card</p>
-  <div class="form-field">
-    <label class="info-item" for="accountNumber">Account Number:</label>
-    <input type="text" id="accountNumber" name="accountNumber" required>
-  </div>
-  <div class="form-field">
-    <label class="info-item" for="accountName">Account Name:</label>
-    <input type="text" id="accountName" name="accountName" required>
-  </div>
-  <div class="form-field">
-    <label class="info-item" for="currentBalance">Current Balance:</label>
-    <input type="text" id="currentBalance" name="currentBalance" required>
-  </div>
-  <div class="form-field">
-    <label class="info-item" for="totalLimit">Total Limit:</label>
-    <input type="text" id="totalLimit" name="totalLimit" required>
-  </div>
-  <div class="form-field">
-    <label class="info-item" for="availableLimit">Available Limit:</label>
-    <input type="text" id="availableLimit" name="availableLimit" required>
-  </div>
-  <div class="form-field">
-    <label class="info-item" for="apr">APR:</label>
-    <input type="text" id="apr" name="apr" required>
-  </div>
-  <div class="form-field">
-    <label class="info-item" for="statementBalance">Statement Balance:</label>
-    <input type="text" id="statementBalance" name="statementBalance" required>
-  </div>
-  <div class="form-field">
-    <label class="info-item" for="minimumPaymentDue">Minimum Payment Due:</label>
-    <input type="text" id="minimumPaymentDue" name="minimumPaymentDue" required>
-  </div>
-  <div class="form-field">
-    <label class="info-item" for="paymentDueDate">Payment Due Date:</label>
-    <input type="date" id="paymentDueDate" name="paymentDueDate" required>
-  </div>
-  <div class="form-field">
-    <label class="info-item" for="closingDate">Closing Date:</label>
-    <input type="date" id="closingDate" name="closingDate" required>
-  </div>
-  <button class="add-btn">Add Credit Card</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Create Credit</title>
+
+    <!-- Montserrat Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        background-color: #e6e8ed;
+        color: #666666;
+        font-family: "Montserrat", sans-serif;
+      }
+
+      .material-icons-outlined {
+        vertical-align: middle;
+        line-height: 1px;
+      }
+
+      .grid-container {
+        display: grid;
+        grid-template-columns: 260px 1fr 1fr 1fr;
+        grid-template-rows: 0.2fr 3fr;
+        grid-template-areas:
+          "sidebar header header header"
+          "sidebar main main main";
+        height: 100vh;
+      }
+
+      /* ---------- SIDEBAR ---------- */
+
+      #sidebar {
+        grid-area: sidebar;
+        height: 100%;
+        background-color: #21232d;
+        color: #9799ab;
+        overflow-y: auto;
+        transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+      }
+
+      .sidebar-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 20px 20px 20px;
+        margin-bottom: 30px;
+      }
+
+      .sidebar-title > span {
+        display: none;
+      }
+
+      .sidebar-brand {
+        margin-top: 15px;
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .sidebar-list {
+        padding: 0;
+        margin-top: 15px;
+        list-style-type: none;
+      }
+
+      .sidebar-list-item {
+        padding: 20px 20px 20px 20px;
+        font-size: 15px;
+      }
+
+      .sidebar-list-item:hover {
+        background-color: rgba(243, 239, 239, 0.989);
+        cursor: pointer;
+      }
+
+      .sidebar-list-item > a {
+        text-decoration: none;
+        color: #9799ab;
+      }
+
+      .sidebar-list-item > i {
+        background-color: rgba(243, 239, 239, 0.989);
+      }
+
+      .sidebar-list-item.credit-card-submenu > a {
+        color: #9799ab;
+      }
+
+      .sidebar-responsive {
+        display: inline !important;
+        position: absolute;
+        /*
+          the z-index of the ApexCharts is 11
+          we want the z-index of the sidebar higher so that
+          the charts are not showing over the sidebar
+          on small screens
+        */
+        z-index: 12 !important;
+
+      }
+
+      /* ---------- MAIN ---------- */
+
+      .main-container {
+        grid-area: main;
+        overflow-y: auto;
+        padding: 20px 20px;
+        display: flex;
+        flex-direction: column; /* Add this line */
+      }
+      
+      .main-title {
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 700;
+      }
+
+      .main-title > p {
+        font-size: 30px;
+        align-items: center ;
+      }
+
+
+      .account-container {
+        border: 4px solid #e0d4d4;
+        padding: 20px;
+        margin: 20px;
+        text-align: center;
+        background-color: rgb(4, 107, 107);
+        color: white;
+        width: 500px;
+        height: 450px;
+        font-size: 22px;
+        margin-bottom: auto;
+      }
+
+      .details-container {
+        display: none;
+        padding-top: 10px;
+        color: white;
+      }
+
+      .account-container.active .details-container {
+        display: block;
+      }
+
+      .add-btn {
+        margin-top: auto;
+}
+
+      /* ---------- MEDIA QUERIES ---------- */
+
+
+      /* Medium <= 992px */
+      @media screen and (max-width: 992px) {
+        .grid-container {
+          grid-template-columns: 1fr;
+          grid-template-rows: 0.2fr 3fr;
+          grid-template-areas:
+            "header"
+            "main";
+        }
+
+        #sidebar {
+          display: none;
+        }
+
+        .menu-icon {
+          display: inline;
+        }
+
+        .sidebar-title > span {
+          display: inline;
+        }
+      }
+
+      /* Extra Small <= 576px */
+      @media screen and (max-width: 576px) {
+        .header-left {
+          display: none;
+        }
+      }
+  </style>
+  </head>
+  <body>
+
+    <div class="grid-container">
+
+      <!-- Sidebar -->
+      <aside id="sidebar">
+        <div class="sidebar-title">
+          <div class="sidebar-brand">
+            <span class="material-icons-outlined">bank</span> CS Bank
+          </div>
+        </div>
+
+        <ul class="sidebar-list">
+          <li class="sidebar-list-item">
+            <a href="/dashboard">
+              <span class="material-icons-outlined">dashboard</span> Dashboard
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="/transaction">
+              <span class="material-icons-outlined">payment</span> Transactions
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="#">
+              <span class="material-icons-outlined">history</span> Statement History
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="/creditCard">
+              <span class="material-icons-outlined">credit_card</span> Credit Card
+          </li>
+
+          <li class="sidebar-list-item">
+            <a href="/profile">
+              <span class="material-icons-outlined">settings</span> Profile
+            </a>
+          </li>
+          <li class="sidebar-list-item">
+            <a href="/logout">
+              <span class="material-icons-outlined">logout</span> Logout
+            </a>
+          </li>
+        </ul>
+      </aside>
+      <!-- End Sidebar -->
+
+      <!-- Main -->
+      <main class="main-container">
+        <div class="main-title">
+          <p class="font-weight-bold">Apply Credit Card</p>
+        </div>
+
+        <div class="account-container">
+            <form method="POST" action="/creditCard/add">
+                <p class="form-header">Get Credit Card</p>
+                <div class="form-field">
+                  <label class="info-item" for="accountNumber">Account Number:</label>
+                  <input type="text" id="accountNumber" name="accountNumber" required>
+                </div>
+                <div class="form-field">
+                  <label class="info-item" for="accountName">Account Name:</label>
+                  <input type="text" id="accountName" name="accountName" required>
+                </div>
+                <div class="form-field">
+                  <label class="info-item" for="currentBalance">Current Balance:</label>
+                  <input type="text" id="currentBalance" name="currentBalance" required>
+                </div>
+                <div class="form-field">
+                  <label class="info-item" for="totalLimit">Total Limit:</label>
+                  <input type="text" id="totalLimit" name="totalLimit" required>
+                </div>
+                <div class="form-field">
+                  <label class="info-item" for="availableLimit">Available Limit:</label>
+                  <input type="text" id="availableLimit" name="availableLimit" required>
+                </div>
+                <div class="form-field">
+                  <label class="info-item" for="apr">APR:</label>
+                  <input type="text" id="apr" name="apr" required>
+                </div>
+                <div class="form-field">
+                  <label class="info-item" for="statementBalance">Statement Balance:</label>
+                  <input type="text" id="statementBalance" name="statementBalance" required>
+                </div>
+                <div class="form-field">
+                  <label class="info-item" for="minimumPaymentDue">Minimum Payment Due:</label>
+                  <input type="text" id="minimumPaymentDue" name="minimumPaymentDue" required>
+                </div>
+                <div class="form-field">
+                  <label class="info-item" for="paymentDueDate">Payment Due Date:</label>
+                  <input type="date" id="paymentDueDate" name="paymentDueDate" required>
+                </div>
+                <div class="form-field">
+                  <label class="info-item" for="closingDate">Closing Date:</label>
+                  <input type="date" id="closingDate" name="closingDate" required>
+                </div>
+                <button class="add-btn">Add Credit Card</button>
+              </form>
+              
+      </div>
+
+      </main>
+      <!-- End Main -->
+
+    </div>
+
+  </body>
+</html>
