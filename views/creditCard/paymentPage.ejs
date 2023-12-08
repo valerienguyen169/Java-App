@@ -184,7 +184,7 @@
 
     </style>
 </head>
-  
+
 <body>
 
     <div class="grid-container">
@@ -242,14 +242,14 @@
         <h3><%= creditCard.accountName %> (....<%= creditCard.accountNumber.slice(-4) %>)</h3>
         <span id="currentBalance"><%= creditCard.currentBalance.toFixed(2) %></span>
         <br />
-  
+
         <label for="paymentAmount">Payment Amount:</label>
         <input type="number" id="paymentAmount" name="paymentAmount" step="0.01" required />
         <br />
-  
+
         <button type="submit" id="makePaymentButton">Make Payment</button>
       </form>
-  
+
       <a href="/creditCard">Back to Credit Card Page</a>
 
       </main>
