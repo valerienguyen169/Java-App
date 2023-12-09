@@ -22,6 +22,8 @@ import {
 } from '../models/CustomerModel';
 import { parseDatabaseError } from '../utils/db-utils';
 import { AuthRequest, LoginAuthRequest } from '../types/customerInfo';
+import { getAccountsByCustomerId } from '../models/AccountModel';
+import { getCreditCardByCustomerId } from '../models/CreditCardModel';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -109,10 +111,23 @@ async function getCustomerDashboard(req: Request, res: Response): Promise<void> 
     res.redirect('/login');
     return;
   }
+  const { authenticatedCustomer } = req.session;
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
 
   const customer = await getCustomerById(req.session.authenticatedCustomer.customerId);
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+  const allAccounts = await getAccountsByCustomerId(customerId);
+  const allCreditCards = await getCreditCardByCustomerId(customerId);
   console.log({ customer });
-  res.render('dashboard', { customer });
+  res.render('dashboard', { customer, allAccounts, allCreditCards });
 }
 
 async function logOut(req: Request, res: Response): Promise<void> {

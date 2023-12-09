@@ -143,6 +143,11 @@
         color: white;
       }
 
+      .details-container a {
+        color: white;
+        margin-bottom: 20px;
+      }
+
       .account-container.active .details-container {
         display: block;
       }
@@ -242,23 +247,35 @@
           <p class="font-weight-bold">DASHBOARD</p>
         </div>
 
-        <div class="account-container">
-          <h2>Checking Account</h2>
-          <p>Current Balance:</p>
-          <p id="checkingAmount"></p>
-      </div>
-
-      <div class="account-container" onclick="toggleDetails(this)">
-          <h2>Savings Account</h2>
-          <p>Current Balance:</p>
-          <p class="amount" id="savingsAmount"></p>
-          <div class="details-container">
-              <p>Account Number:</p><p id="accountNumber"></p>
-              <p>Routing Number:</p><p id="routingNumber"></p>
-              <p>Interest Rate:</p><p id="interestRate"></p>
+        <h2>Banking</h2>
+        <% for (const account of allAccounts) { %>
+          <div class="account-container" onclick="toggleDetails(this)">
+            <h3>
+              <%= account.accountName %> (....<%= String(account.accountNumber).slice(-4) %>)
+            </h3>
+            <p>Current Balance: $<%= Number(account.currentBalance).toFixed(2) %></p>
+            <div class="details-container">
+              <p>Account Number:</p><p id="accountNumber"><%= account.accountNumber %></p>
+              <p>Routing Number:</p><p id="routingNumber"><%= account.routingNumber %></p>
+              <p>Interest Rate:</p><p id="interestRate"><%= Number(account.interest).toFixed(2) %>%</p>
+            </div>
+            <div class="arrow">&#9660;</div>
           </div>
-          <div class="arrow">&#9660;</div>
-      </div>
+      <% } %>
+
+        <h2>Credit Cards</h2>
+        <% for (const creditCard of allCreditCards) { %>
+          <div class="account-container" onclick="toggleDetails(this)">
+            <h3>
+              <%= creditCard.accountName %> (....<%= String(creditCard.accountNumber).slice(-4) %>)
+            </h3>
+            <p>Current Balance: $<%= Number(creditCard.currentBalance).toFixed(2) %></p>
+            <div class="details-container">
+              
+            </div>
+            <div class="arrow" style="margin-top: 20px;">&#9660;</div>
+          </div>
+      <% } %>
 
       <script>
           function toggleDetails(element) {

@@ -9,13 +9,13 @@ export class Account {
   @Column({ nullable: false })
   accountName: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   currentBalance: number;
 
   @Column({ unique: true })
   routingNumber: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
   interest: number;
 
   @Column({ nullable: true })
