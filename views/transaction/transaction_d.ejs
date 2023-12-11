@@ -28,7 +28,7 @@
         line-height: 1px;
       }
 
-      
+
       .grid-container {
       display: grid;
       grid-template-columns: 260px 1fr 1fr 1fr;
@@ -37,7 +37,7 @@
         'sidebar header header header'
         'sidebar main main main';
       height: 100vh;
-      width: auto; 
+      width: auto;
     }
 
 
@@ -179,7 +179,7 @@
           </a>
         </li>
         <li class="sidebar-list-item">
-          <a href="#">
+          <a href="/history">
             <span class="material-icons-outlined">history</span> Statement History
           </a>
         </li>
@@ -205,7 +205,7 @@
     <!-- Main -->
 <div class="main-container">
   <main>
-  <form id="transferForm">
+  <form method="POST" action="/transaction/add">
 
     <label for="fromAccount">From Account:</label>
     <input type="text" id="fromAccount" name="fromAccount" placeholder="Enter Sender Account Number"required>
@@ -213,49 +213,19 @@
     <label for="toAccount">To Account:</label>
     <input type="text" id="toAccount" name="toAccount" placeholder="Enter Recipient Account Number"required>
 
-    <label for="date">Date:</label>
-    <input type="date" id="date" name="date" required>
-
     <label for="amount">Amount:</label>
     <input type="number" id="amount" placeholder="Enter amount">
 
-    <button type="button" onclick="transferMoney()">Transfer</button>
+    <label for="customerId">Recipient Customer:</label>
+    <input type="text" id="customerId" placeholder="Enter the Recipient's CustomerId">
+
+    <label for="type">Type of Transaction:</label>
+    <input type="text" id="type" placeholder="Will this be a Deposit or a Withdrawal?">
+
+    <button type="add-btn">Transfer</button>
   </form>
 </main>
 </div>
 </div>
-
-  <script>
-  async function transferMoney() {
-  const amount = document.getElementById('amount').value;
-  const date = document.getElementById('date').value;
-  const fromAccount = document.getElementById('fromAccount').value;
-  const toAccount = document.getElementById('toAccount').value;
-
-  const response = await fetch('/transfer-money', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      amount,
-      date,
-      type: 'Transfer',  // Assuming 'Transfer' is the transaction type
-      accountNo: fromAccount,
-      otherAccountNo: toAccount,
-      // Include any other required fields based on your server-side implementation
-    }),
-  });
-
-  if (response.ok) {
-    // Handle success, e.g., show a success message
-    alert('Money transferred successfully!');
-  } else {
-    // Handle error, e.g., show an error message
-    alert('Error transferring money. Please try again.');
-  }
-}
-
-  </script>
 </body>
 </html>

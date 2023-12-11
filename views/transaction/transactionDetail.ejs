@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Credit Card Detail</title>
 
     <!-- Montserrat Font -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -88,13 +88,6 @@
         color: #9799ab;
       }
 
-      .sidebar-list-item > i {
-        background-color: rgba(243, 239, 239, 0.989);
-      }
-
-      .sidebar-list-item.credit-card-submenu > a {
-        color: #9799ab;
-      }
 
       .sidebar-responsive {
         display: inline !important;
@@ -118,12 +111,14 @@
       }
 
       .main-title {
-        display: flex;
+        align-items: center;
         justify-content: space-between;
+        font-weight: 700;
       }
 
       .main-title > p {
         font-size: 30px;
+        align-items: center ;
       }
 
       .account-container {
@@ -133,32 +128,19 @@
         text-align: center;
         background-color: rgb(4, 107, 107);
         color: white;
-        width: 450px;
-
+        width: 720px;
+        font-weight: 500;
       }
 
-      .details-container {
-        display: none;
-        padding-top: 10px;
+      .account-container a {
         color: white;
-      }
+        text-decoration: none;
+        }
 
-      .details-container a {
-        color: white;
-      }
+        .account-container a:hover {
+        background-color: rgba(243, 239, 239, 0.989);
+        }
 
-      .account-container.active .details-container {
-        display: block;
-      }
-
-      .arrow {
-        cursor: pointer;
-        transition: transform 0.3s;
-      }
-
-      .account-container.active .arrow {
-        transform: rotate(180deg);
-      }
       /* ---------- MEDIA QUERIES ---------- */
 
 
@@ -185,12 +167,6 @@
         }
       }
 
-      /* Extra Small <= 576px */
-      @media screen and (max-width: 576px) {
-        .header-left {
-          display: none;
-        }
-      }
   </style>
   </head>
   <body>
@@ -212,7 +188,7 @@
             </a>
           </li>
           <li class="sidebar-list-item">
-            <a href="#">
+            <a href="/transaction">
               <span class="material-icons-outlined">payment</span> Transactions
             </a>
           </li>
@@ -243,63 +219,24 @@
       <!-- Main -->
       <main class="main-container">
         <div class="main-title">
-          <p class="font-weight-bold">DASHBOARD</p>
+          <p class="font-weight-bold">CREDIT CARD DETAILS</p>
         </div>
 
-        <h2>Banking</h2>
-        <% for (const account of allAccounts) { %>
-          <div class="account-container" onclick="toggleDetails(this)">
-            <h3>
-              <%= account.accountName %> (....<%= String(account.accountNumber).slice(-4) %>)
-            </h3>
-            <p>Current Balance: $<%= Number(account.currentBalance).toFixed(2) %></p>
-            <div class="details-container">
-              <p>Account Number:</p><p id="accountNumber"><%= account.accountNumber %></p>
-              <p>Routing Number:</p><p id="routingNumber"><%= account.routingNumber %></p>
-              <p>Interest Rate:</p><p id="interestRate"><%= Number(account.interest).toFixed(2) %>%</p>
-            </div>
-            <div class="arrow">&#9660;</div>
-          </div>
-      <% } %>
-
-        <h2>Credit Cards</h2>
-        <% for (const creditCard of allCreditCards) { %>
-          <div class="account-container" onclick="toggleDetails(this)">
-            <h3>
-              <%= creditCard.accountName %> (....<%= String(creditCard.accountNumber).slice(-4) %>)
-            </h3>
-            <p>Current Balance: $<%= Number(creditCard.currentBalance).toFixed(2) %></p>
-            <div class="details-container">
-              <a href="/creditCard/<%= customer.customerId %>/<%= creditCard.accountNumber %>/details">View Card Details ></a>
-            </div>
-            <div class="arrow" style="margin-top: 20px;">&#9660;</div>
-          </div>
-      <% } %>
-
-      <script>
-          function toggleDetails(element) {
-              element.classList.toggle('active');
-          }
-
-          // Function to set data in the HTML
-          function setData() {
-              document.getElementById('checkingAmount').innerText = 'Amount: ' + accountData.checkingAmount;
-              document.getElementById('savingsAmount').innerText = 'Amount: ' + accountData.savingsAmount;
-              document.getElementById('accountNumber').innerText = 'Account Number: ' + accountData.accountNumber;
-              document.getElementById('routingNumber').innerText = 'Routing Number: ' + accountData.routingNumber;
-              document.getElementById('interestRate').innerText = 'Interest Rate: ' + accountData.interestRate;
-          }
-
-          // Set data on page load
-          setData();
-      </script>
-
+        <div class="account-container">
+            <form method="get" action="/transaction/<%= customer.customerId %>/<%= transaction.transactionId %>/details">
+                <h1><%= transaction.transactionId %></h1>
+                <p>Amount: $<span><%= Number(transaction.amount).toFixed(2) %></span></p>
+                <p>Initiative Account: $<span><%= Number(transaction.accountNo) %></span></p>
+                <p>Recipient Account: $<span><%= Number(transaction.otherAccountNo) %></span></p>
+                <p>Inter/IntraBank: <span><%= transaction.bankType %></span>%</p>
+                <p>Recipient's CustomerId: $<span><%= transaction.customerId  %></span></p>
+                <p>Type: $<span><%= transaction.type %></span></p>
+                <p>Date of Transaction: $<span><%= transaction.date %></span></p>
+                <br>
+              </form>
+      </div>
       </main>
-      <!-- End Main -->
 
     </div>
-
-    <!-- ApexCharts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.3/apexcharts.min.js"></script>
   </body>
 </html>

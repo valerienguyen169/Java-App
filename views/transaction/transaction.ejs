@@ -30,7 +30,7 @@
         line-height: 1px;
       }
 
-      
+
       .grid-container {
   display: grid;
   grid-template-columns: 260px 1fr 1fr 1fr;
@@ -122,7 +122,7 @@
       .main-title > p {
         font-size: 30px;
       }
-      
+
       .transactions-box {
         text-align: center;
         padding: 20px;
@@ -172,7 +172,7 @@
             </a>
           </li>
           <li class="sidebar-list-item">
-            <a href="#">
+            <a href="/history">
               <span class="material-icons-outlined">history</span> Statement History
             </a>
           </li>
@@ -196,13 +196,10 @@
       <!-- End Sidebar -->
     </div>
       <!-- Main -->
-    
+
       <main class="transactions-box">
           <div class="header">Make Transactions</div>
           <div>
-            <a href="within_transaction.ejs">
-            <span class="icon" onclick="transferBetweenAccounts()">⇋</span> Transfer Money
-            </a>
             <a href="transaction_d.ejs">
             <span class="icon" onclick="sendToDifferentAccounts()">↗</span> Send Money
             </a>
@@ -214,7 +211,7 @@
           // Add logic for transferring between accounts
           alert("Transfer between accounts clicked");
         }
-    
+
         function sendToDifferentAccounts() {
           // Add logic for sending money to different accounts
           alert("Send to different accounts clicked");

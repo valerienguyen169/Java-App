@@ -63,6 +63,23 @@ function addOneMonth(date: Date): Date {
   return newDate;
 }
 
+async function updateCreditCard(creditCard: CreditCard, currentDate: Date): Promise<CreditCard> {
+  if (currentDate > creditCard.closingDate) {
+    const newClosingDate = addOneMonth(creditCard.closingDate);
+    const newPaymentDueDate = addOneMonth(creditCard.paymentDueDate);
+    const newMinimumPaymentDue = calculateNewMinimumPaymentDue(creditCard.currentBalance);
+    const newStatementBalance = creditCard.currentBalance;
+
+    await updateCreditCardByAccountNumber(creditCard.accountNumber, {
+      closingDate: newClosingDate,
+      paymentDueDate: newPaymentDueDate,
+      minimumPaymentDue: newMinimumPaymentDue,
+      statementBalance: newStatementBalance,
+    });
+  }
+  return creditCard;
+}
+
 async function getCreditCard(req: Request, res: Response): Promise<void> {
   if (!req.session.isLoggedIn) {
     res.redirect('/login');
@@ -83,31 +100,14 @@ async function getCreditCard(req: Request, res: Response): Promise<void> {
   const { accountNumber } = req.params;
 
   try {
-    const creditCard = await getCreditCardByAccountNumber(accountNumber);
+    let creditCard = await getCreditCardByAccountNumber(accountNumber);
 
     if (!creditCard) {
       throw new Error('Credit card not found');
     }
 
-    let newStatementBalance;
-    let newMinimumPaymentDue;
-    let newClosingDate;
-    let newPaymentDueDate;
     const currentDate = new Date();
-    if (currentDate > creditCard.closingDate && creditCard.currentBalance > 0) {
-      newStatementBalance = creditCard.currentBalance;
-      newMinimumPaymentDue = calculateNewMinimumPaymentDue(creditCard.currentBalance);
-      newClosingDate = addOneMonth(creditCard.closingDate);
-      newPaymentDueDate = addOneMonth(creditCard.paymentDueDate);
-    }
-
-    await updateCreditCardByAccountNumber(accountNumber, {
-      statementBalance: newStatementBalance,
-      minimumPaymentDue: newMinimumPaymentDue,
-      closingDate: newClosingDate,
-      paymentDueDate: newPaymentDueDate,
-    });
-    console.log(creditCard);
+    creditCard = await updateCreditCard(creditCard, currentDate);
     res.render('creditCard/creditCardDetail', { customer, creditCard });
   } catch (err) {
     console.error(err);

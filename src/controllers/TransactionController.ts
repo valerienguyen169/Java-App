@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { getCustomerById } from '../models/CustomerModel';
 import {
   addTransaction,
   addInterest,
   getTransactionById,
   getTransactionsByCustomerId,
-  transactionBelongsToCustomer,
 } from '../models/TransactionModel';
 import {
   getAccountByAccountNumber,
@@ -13,34 +14,71 @@ import {
   AccountBelongsToCustomer,
 } from '../models/AccountModel';
 import { Transactions, TransactionIdParam } from '../types/transaction';
-import { CustomerIdParam, CustomerInfo } from '../types/customerInfo';
+import { CustomerIdParam } from '../types/customerInfo';
+import { parseDatabaseError } from '../utils/db-utils';
+
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
 async function getTransaction(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer, isLoggedIn } = req.session;
   const { transactionID } = req.params as TransactionIdParam;
-  const { customerId } = req.body as CustomerInfo;
-  const transaction = await getTransactionById(transactionID);
-
-  if (!transaction) {
-    res.sendStatus(404);
+  if (!isLoggedIn) {
+    res.redirect('/login');
     return;
   }
-  const belongs = transactionBelongsToCustomer(transactionID, customerId);
-  if (!belongs) {
-    res.sendStatus(403); // not your transaction. Turn into redirect later
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
   }
 
-  res.sendStatus(200).json(transaction);
+  const customer = await getCustomerById(req.session.authenticatedCustomer.customerId);
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  try {
+    const transaction = await getTransactionById(transactionID);
+
+    if (!transaction) {
+      throw new Error('No transaction');
+    }
+    res.render('transaction/transactionDetail', { customer, transaction });
+  } catch (err) {
+    console.error(err);
+    const databaseErrorMessage = parseDatabaseError(err);
+    res.status(500).json(databaseErrorMessage);
+  }
 }
 
 async function getCustomerTransactions(req: Request, res: Response): Promise<void> {
-  const { customerId } = req.params as CustomerIdParam;
-  const customer = await getCustomerById(customerId);
-  if (!customer) {
-    res.sendStatus(404); // Couldn't be found
+  const { authenticatedCustomer, isLoggedIn } = req.session;
+  if (!isLoggedIn) {
+    res.redirect('/login');
     return;
   }
-  const transactions = await getTransactionsByCustomerId(customerId);
-  res.status(201).json(transactions); // replace with render once front-end file is created.
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(__dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+  const { customerId } = authenticatedCustomer;
+  const customer = await getCustomerById(authenticatedCustomer.customerId);
+  if (!customer) {
+    res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  const customerTransactions = await getTransactionsByCustomerId(customerId);
+  try {
+    console.log(customerTransactions);
+    res.render('transaction_d', { customer, customerTransactions });
+  } catch (err) {
+    console.error(err);
+    const databaseErrorMessage = parseDatabaseError(err);
+    res.status(500).json(databaseErrorMessage);
+  }
 }
 
 async function getMonthlyRecord(req: Request, res: Response): Promise<void> {
@@ -64,12 +102,13 @@ async function getMonthlyRecord(req: Request, res: Response): Promise<void> {
       record.push(transactions[i]);
     }
   }
-  res.status(201).json(record); // replace with render once front-end is made.
+  res.render('/history', { record }); // replace with render once front-end is made.
 }
 
 async function makeTransaction(req: Request, res: Response): Promise<void> {
   const { authenticatedCustomer, isLoggedIn } = req.session;
-  const { customerId, amount, date, type, accountNo, otherAccountNo } = req.body as Transactions;
+  const { customerId, amount, type, accountNo, otherAccountNo } = req.body as Transactions;
+  const date = new Date();
   let bankType = '';
   if (!isLoggedIn) {
     res.redirect('/login');
@@ -116,7 +155,7 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
   }
   if (type === 'Deposit') {
     if (amount >= otherAccount.currentBalance) {
-      res.sendStatus(403); // can't have negative balance. Turn into redirect later
+      res.status(403).sendFile(path.join(dirname, '../../public/html/transaction_failed.html'));
       return;
     }
     if (account.routingNumber === otherAccount.routingNumber) {
@@ -132,7 +171,7 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
   }
   if (type === 'Withdrawal') {
     if (amount <= account.currentBalance) {
-      res.sendStatus(403); // can't have negative balance. Turn into redirect later
+      res.status(403).sendFile(path.join(dirname, '../../public/html/transaction_failed.html'));
       return;
     }
     account.currentBalance -= amount;
@@ -141,28 +180,56 @@ async function makeTransaction(req: Request, res: Response): Promise<void> {
     otherType = 'Deposit';
     updateAccountByAccountNumber(accountNo, otherAccount);
   }
-  const transaction = await addTransaction(
-    customerId,
-    amount,
-    date,
-    type,
-    bankType,
-    accountNo,
-    otherAccountNo,
-    customer
-  );
-  const otherTransaction = await addTransaction(
-    authenticatedCustomer.customerId,
-    amount,
-    date,
-    otherType,
-    bankType,
-    otherAccountNo,
-    accountNo,
-    otherCustomer
-  );
-  console.log(transaction);
-  console.log(otherTransaction);
+  try {
+    const transaction = await addTransaction(
+      customerId,
+      amount,
+      date,
+      type,
+      bankType,
+      accountNo,
+      otherAccountNo,
+      customer
+    );
+    console.log(transaction);
+    const otherTransaction = await addTransaction(
+      authenticatedCustomer.customerId,
+      amount,
+      date,
+      otherType,
+      bankType,
+      otherAccountNo,
+      accountNo,
+      otherCustomer
+    );
+    res.status(201).sendFile(path.join(dirname, '../../public/html/transaction_successful.html'));
+    console.log(otherTransaction);
+    res.redirect('/transaction/add');
+  } catch (err) {
+    console.error(err);
+    const databaseErrorMessage = parseDatabaseError(err);
+    res.status(500).json(databaseErrorMessage);
+  }
+}
+
+async function renderMakeTransactionPage(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer } = req.session;
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+
+  const customer = await getCustomerById(customerId);
+
+  if (!customer) {
+    res.status(404).sendFile(path.join(dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  res.render('transaction/transaction_d', { customer });
 }
 
 async function accumulateInterest(req: Request, res: Response): Promise<void> {
@@ -228,4 +295,5 @@ export {
   getCustomerTransactions,
   getMonthlyRecord,
   accumulateInterest,
+  renderMakeTransactionPage,
 };

@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import {
   getAccountsByCustomerId,
   getAccountByAccountNumber,
@@ -11,6 +13,9 @@ import { getCustomerById } from '../models/CustomerModel';
 import { Account } from '../entities/Account';
 import { parseDatabaseError } from '../utils/db-utils';
 
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+
 async function addAccount(req: Request, res: Response): Promise<void> {
   const { authenticatedCustomer, isLoggedIn } = req.session;
   const account = req.body as Account;
@@ -20,7 +25,7 @@ async function addAccount(req: Request, res: Response): Promise<void> {
   }
   const customer = await getCustomerById(authenticatedCustomer.customerId);
   if (!customer) {
-    res.sendStatus(404); // no customer;
+    res.status(404).sendFile(path.join(dirname, '../../public/html/userNotFound.html'));
     return;
   }
   try {
@@ -32,6 +37,7 @@ async function addAccount(req: Request, res: Response): Promise<void> {
     res.status(500).json(databaseErrorMessage);
   }
 }
+
 
 async function getAccount(req: Request, res: Response): Promise<void> {
   const { accountNumber } = req.body as AccountIdParam;
@@ -65,4 +71,24 @@ async function getCustomerAccounts(req: Request, res: Response): Promise<void> {
   res.status(201).json(accounts); // replace with render once front-end is created.
 }
 
-export { getAccount, getCustomerAccounts, addAccount };
+async function renderCreateAccountPage(req: Request, res: Response): Promise<void> {
+  const { authenticatedCustomer } = req.session;
+
+  if (!authenticatedCustomer) {
+    res.status(401).sendFile(path.join(dirname, '../../public/html/accessDenied.html'));
+    return;
+  }
+
+  const { customerId } = authenticatedCustomer;
+
+  const customer = await getCustomerById(customerId);
+
+  if (!customer) {
+    res.status(404).sendFile(path.join(dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+
+  res.render('account/createAccount', { customer });
+}
+
+export { getAccount, getCustomerAccounts, addAccount, renderCreateAccountPage };

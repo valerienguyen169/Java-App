@@ -8,12 +8,19 @@ import {
   validateLoginBody,
   validatePasswordUpdateBody,
 } from './validators/authValidator';
-import { getAccount, getCustomerAccounts, addAccount } from './controllers/AccountController';
+import {
+  getAccount,
+  getCustomerAccounts,
+  addAccount,
+  renderCreateAccountPage,
+} from './controllers/AccountController';
 import {
   getCustomerTransactions,
+  getTransaction,
   makeTransaction,
   getMonthlyRecord,
   accumulateInterest,
+  renderMakeTransactionPage,
 } from './controllers/TransactionController';
 import {
   registerUser,
@@ -102,15 +109,18 @@ app.get('/ping', (req, res) => {
 });
 
 // Account
-app.post('/api/accounts/', addAccount);
-app.get('/accounts/:accountNumber', getAccount);
-app.get('/accounts/:customerId', getCustomerAccounts);
+app.post('/account/add', addAccount);
+app.get('/account/add', renderCreateAccountPage);
+app.get('/account/:accountNumber', getAccount);
+app.get('/account/:customerId', getCustomerAccounts);
 
 // Transaction
-app.post('/api/transactions', makeTransaction);
-app.get('/transactions/:customerId', getCustomerTransactions);
-app.post('/api/transactions', accumulateInterest);
-app.get('/transactions/:date/:customerId', getMonthlyRecord);
+app.post('/transaction/add', makeTransaction);
+app.get('/transaction/add', renderMakeTransactionPage);
+app.get('/transaction', getCustomerTransactions);
+app.get('/transaction/:customerId/:transactionId/details', getTransaction);
+app.post('/api/transaction', accumulateInterest);
+app.get('/history', getMonthlyRecord);
 
 app.listen(PORT, () => {
   console.log(`server listening on http://localhost:${PORT}`);

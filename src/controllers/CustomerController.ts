@@ -172,12 +172,18 @@ async function updateIncome(req: Request, res: Response): Promise<void> {
   }
 
   const { customerId } = authenticatedCustomer;
-  const { income } = req.body as { income: number };
-
   const customer = await getCustomerById(customerId);
 
   if (!customer) {
     res.status(404).sendFile(path.join(__dirname, '../../public/html/userNotFound.html'));
+    return;
+  }
+  const { income } = req.body as { income: number };
+
+  // Validate the income input
+  if (isNaN(income) || income < 0) {
+    const errorMessage = 'Invalid income value';
+    res.render('customer/updateIncome', { customer, message: errorMessage });
     return;
   }
 
